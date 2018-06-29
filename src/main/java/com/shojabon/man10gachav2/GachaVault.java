@@ -1,6 +1,5 @@
 package com.shojabon.man10gachav2;
 
-import com.shojabon.man10gachav2.Man10GachaEnums.GachaVaultMode;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
@@ -12,6 +11,12 @@ import red.man10.man10vaultapiplus.enums.TransactionCategory;
 import red.man10.man10vaultapiplus.enums.TransactionType;
 
 import java.util.UUID;
+enum GachaVaultMode {
+    VAULT_API_PLUS,
+    VAULT,
+    NONE
+}
+
 
 /**
  * Created by sho on 2018/06/23.

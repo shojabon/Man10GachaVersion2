@@ -34,7 +34,7 @@ public class GachaVault {
             vaultMode = GachaVaultMode.VAULT;
             vault = new VaultAPI();
         }else{
-            vaultMode = GachaVaultMode.NONE;
+            vaultMode = GachaVaultMode.NONE
         }
     }
 

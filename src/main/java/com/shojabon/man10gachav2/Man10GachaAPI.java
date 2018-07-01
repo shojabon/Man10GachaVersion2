@@ -1,6 +1,7 @@
 package com.shojabon.man10gachav2;
 
 import com.shojabon.man10gachav2.apis.SItemStack;
+import com.shojabon.man10gachav2.data.GachaItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;

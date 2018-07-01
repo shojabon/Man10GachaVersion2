@@ -8,15 +8,15 @@ import java.util.ArrayList;
  * Created by sho on 2018/06/23.
  */
 public class GachaItemStack {
-    ItemStack item;
-    ArrayList<String> commands;
-    String broadcastMessage;
-    String playerMessage;
-    boolean giveItem;
-    int amount;
-    GachaTitleText playerTitleText;
-    GachaTitleText broadcastTitleText;
-    ArrayList<ItemStack> items;
+    public ItemStack item;
+    public ArrayList<String> commands;
+    public String broadcastMessage;
+    public String playerMessage;
+    public boolean giveItem;
+    public int amount;
+    public GachaTitleText playerTitleText;
+    public GachaTitleText broadcastTitleText;
+    public ArrayList<ItemStack> items;
 
     public GachaItemStack(ItemStack item, int amount, ArrayList<ItemStack> outputItems, ArrayList<String> commands, boolean giveItem, String broadcastMessage, String playerMessage, GachaTitleText playerTitleText, GachaTitleText broadcastTitleText){
         this.item = item;

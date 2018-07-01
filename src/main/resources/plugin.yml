@@ -2,5 +2,6 @@ name: Man10GachaV2
 version: ${project.version}
 main: com.shojabon.man10gachav2.Man10GachaV2
 authors: [Sho0]
+softdepend: [Man10VaultAPIPlus, Vault]
 commands:
  gacha:

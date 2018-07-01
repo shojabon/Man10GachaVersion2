@@ -1,4 +1,4 @@
-package com.shojabon.man10gachav2;
+package com.shojabon.man10gachav2.apis;
 
 import com.google.common.collect.ForwardingMultimap;
 import org.bukkit.Material;

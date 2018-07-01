@@ -1,9 +1,8 @@
-package com.shojabon.man10gachav2;
+package com.shojabon.man10gachav2.apis;
 
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import red.man10.man10vaultapiplus.Man10VaultAPI;

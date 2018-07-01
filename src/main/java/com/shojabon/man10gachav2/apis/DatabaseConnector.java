@@ -1,6 +1,7 @@
-package com.shojabon.man10gachav2;
+package com.shojabon.man10gachav2.apis;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 
 /**
@@ -25,7 +26,11 @@ public class DatabaseConnector {
             e.printStackTrace();
         }
         if(!file.exists()){
-            file.mkdirs();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:" + file.getPath());

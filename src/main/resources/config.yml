@@ -1,5 +1,12 @@
-
-
-
-
 prefix: '&a[&dMan10Gacha&eV2&a]&f'
+
+database_settings:
+ #you can choose between <mysql/sqlite/none>
+  type: mysql
+  database: mgacha
+  #if you choose sqlite database_settings below here is not needed
+  host: 127.0.0.1
+  port: 3306
+  username: root
+  password: password
+

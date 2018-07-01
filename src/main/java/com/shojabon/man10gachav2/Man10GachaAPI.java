@@ -1,5 +1,6 @@
 package com.shojabon.man10gachav2;
 
+import com.shojabon.man10gachav2.apis.SItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -30,6 +31,7 @@ public class Man10GachaAPI {
             config.set("index." + i + ".commands", index.get(i).commands);
             config.set("index." + i + ".giveItem", index.get(i).giveItem);
             config.set("index." + i + ".broadcastMessage", index.get(i).broadcastMessage);
+            config.set("index." + i + ".playerMessage", index.get(i).playerMessage);
             config.set("index." + i + ".playerMessage", index.get(i).playerMessage);
         }
         try {

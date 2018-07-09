@@ -7,18 +7,24 @@ import java.util.ArrayList;
 /**
  * Created by sho on 2018/06/23.
  */
-public class GachaItemStack {
+class GachaItemStack {
     public ItemStack item;
     public ArrayList<String> commands;
-    public String broadcastMessage;
-    public String playerMessage;
+    public ArrayList<String> broadcastMessage;
+    public ArrayList<String> playerMessage;
     public boolean giveItem;
     public int amount;
     public GachaTitleText playerTitleText;
     public GachaTitleText broadcastTitleText;
     public ArrayList<ItemStack> items;
+    public GachaTeleport teleport;
+    public GachaSound broadcastSound;
+    public GachaSound playerSound;
 
-    public GachaItemStack(ItemStack item, int amount, ArrayList<ItemStack> outputItems, ArrayList<String> commands, boolean giveItem, String broadcastMessage, String playerMessage, GachaTitleText playerTitleText, GachaTitleText broadcastTitleText){
+
+    public GachaItemStack(ItemStack item, int amount, ArrayList<ItemStack> outputItems, ArrayList<String> commands, boolean giveItem, ArrayList<String> broadcastMessage, ArrayList<String> playerMessage, GachaTitleText playerTitleText, GachaTitleText broadcastTitleText
+
+    ){
         this.item = item;
         this.commands = commands;
         this.broadcastMessage = broadcastMessage;

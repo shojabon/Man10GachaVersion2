@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 /**
  * Created by sho on 2018/07/01.
  */
-public class GachaTitleText {
+class GachaTitleText {
     String mainText;
     String subText;
     int fadeIntTime;
@@ -25,9 +25,16 @@ public class GachaTitleText {
         p.sendTitle(mainText, subText,fadeIntTime,time,fadeoutTime);
     }
 
-    public void playTitleToAllPlayers(){
+    public void playTitleToServer(){
         for(Player p : Bukkit.getServer().getOnlinePlayers()){
             p.sendTitle(mainText, subText, fadeIntTime,time,fadeoutTime);
+        }
+    }
+    public void playTitleToServerExeptPlayer(Player player){
+        for(Player p : Bukkit.getServer().getOnlinePlayers()){
+            if(!p.equals(player)){
+                p.sendTitle(mainText, subText, fadeIntTime,time,fadeoutTime);
+            }
         }
     }
 }

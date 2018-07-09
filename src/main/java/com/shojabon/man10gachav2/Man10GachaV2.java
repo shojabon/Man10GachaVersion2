@@ -1,20 +1,18 @@
 package com.shojabon.man10gachav2;
 
+import com.shojabon.man10gachav2.apis.AnvilGUIAPI;
 import com.shojabon.man10gachav2.apis.DatabaseConnector;
 import com.shojabon.man10gachav2.apis.GachaVault;
+import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.function.BiFunction;
 
 public final class Man10GachaV2 extends JavaPlugin {
 
@@ -76,7 +74,10 @@ public final class Man10GachaV2 extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(command.getName().equalsIgnoreCase("gacha")){
-
+            new AnvilGUI(this, ((Player) sender), "test", (player, s) -> {
+                Bukkit.broadcastMessage(s);
+                return null;
+            });
         }
         return false;
     }

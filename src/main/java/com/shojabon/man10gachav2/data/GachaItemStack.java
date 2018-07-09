@@ -22,7 +22,12 @@ class GachaItemStack {
     public GachaSound playerSound;
 
 
-    public GachaItemStack(ItemStack item, int amount, ArrayList<ItemStack> outputItems, ArrayList<String> commands, boolean giveItem, ArrayList<String> broadcastMessage, ArrayList<String> playerMessage, GachaTitleText playerTitleText, GachaTitleText broadcastTitleText
+
+    public GachaItemStack(ItemStack item, int amount, ArrayList<ItemStack> outputItems,
+                          ArrayList<String> commands, boolean giveItem,
+                          ArrayList<String> broadcastMessage,
+                          ArrayList<String> playerMessage, GachaTitleText playerTitleText,
+                          GachaTitleText broadcastTitleText,
 
     ){
         this.item = item;

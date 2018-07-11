@@ -1,15 +1,17 @@
 package com.shojabon.man10gachav2;
 
 import com.shojabon.man10gachav2.apis.SItemStack;
-import com.shojabon.man10gachav2.data.GachaItemStack;
+import com.shojabon.man10gachav2.data.*;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by sho on 2018/06/23.
@@ -17,24 +19,21 @@ import java.util.ArrayList;
 public class Man10GachaAPI {
     Plugin plugin = Bukkit.getPluginManager().getPlugin("Man10GachaV2");
 
-    public void createNewGacha(String gachaName, String title,ArrayList<GachaItemStack> itemStacks){
+    public void createNewGacha(String gachaName, String title,ArrayList<GachaFinalItemStack> itemStacks){
         File file = new File(plugin.getDataFolder(), "gacha" + File.separator + gachaName + ".yml");
         createFileIfNotExists(file);
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         ArrayList<GachaItemStack> index = compressItemStack(itemStacks);
         String out = "";
         for(int i = 0;i < itemStacks.size();i++){
-            out += index.indexOf(itemStacks.get(i)) + "," + itemStacks.get(i).amount + "|";
+            out += index.indexOf(itemStacks.get(i).getItemStack()) + "," + itemStacks.get(i).getAmount()+ "|";
         }
         config.set("storage", out);
         for(int i = 0;i < index.size();i++){
-            config.set("index." + i + ".data", new SItemStack(index.get(i).item).toBase64());
-            config.set("index." + i + ".commands", index.get(i).commands);
-            config.set("index." + i + ".giveItem", index.get(i).giveItem);
-            config.set("index." + i + ".broadcastMessage", index.get(i).broadcastMessage);
-            config.set("index." + i + ".playerMessage", index.get(i).playerMessage);
-            config.set("index." + i + ".playerMessage", index.get(i).playerMessage);
+            Map<String, Object> item = index.get(i).getStringData();
+            printItemIndex(item, config, i);
         }
+
         try {
             config.save(file);
         } catch (IOException e) {
@@ -42,17 +41,74 @@ public class Man10GachaAPI {
         }
     }
 
-    private void createFileIfNotExists(File file){
-        if(!file.exists()){
-            file.mkdir();
+    public void printItemIndex(Map<String, Object> itemData, FileConfiguration config, int id){
+        for(String key: itemData.keySet()){
+            if(key.equals("commands") || key.equals("broadcastMessage") || key.equals("playerMessage") || key.equals("pexGroup") || key.equals("pexPermission")){
+                config.set("index." + id +"." + key, itemData.get(key));
+            }else if(key.equals("items")){
+                ArrayList<String> out = new ArrayList<>();
+                ArrayList<ItemStack> items = (ArrayList<ItemStack>) itemData.get(key);
+                for(int i = 0;i < items.size();i++){
+                    out.add(new SItemStack(items.get(i)).toBase64());
+                }
+                config.set("index." + id +"." + key, out);
+            }else if(key.equals("playerTitleText") || key.equals("broadcastTitleText")){
+                GachaTitleText text = (GachaTitleText) itemData.get(key);
+                Map<String, String> map = text.getStringData();
+                config.set("index." + id +"." + key + ".mainText", map.get("mainText"));
+                config.set("index." + id +"." + key + ".subText", map.get("subText"));
+                config.set("index." + id +"." + key + ".fadeInTime", map.get("fadeInTime"));
+                config.set("index." + id +"." + key + ".time", map.get("time"));
+                config.set("index." + id +"." + key + ".fadeOutTime", map.get("fadeOutTime"));
+            } else if(key.equals("teleport")){
+                Map<String, String> map = ((GachaTeleport) itemData.get(key)).getStringData();
+                config.set("index." + id +"." + key + ".world", map.get("world"));
+                config.set("index." + id +"." + key + ".x", map.get("x"));
+                config.set("index." + id +"." + key + ".y", map.get("y"));
+                config.set("index." + id +"." + key + ".z", map.get("z"));
+                config.set("index." + id +"." + key + ".pitch", map.get("pitch"));
+                config.set("index." + id +"." + key + ".yaw", map.get("yaw"));
+            }else if(key.equals("broadcastSound") || key.equals("playerSound")){
+                Map<String, String> map = ((GachaSound) itemData.get(key)).getStringData();
+                config.set("index." + id +"." + key + ".sound", map.get("sound"));
+                config.set("index." + id +"." + key + ".volume", map.get("volume"));
+                config.set("index." + id +"." + key + ".pitch", map.get("pitch"));
+            }else if(key.equals("playerPotionEffect") || key.equals("broadcastPotionEffect")){
+                ArrayList<GachaPotionEffect> gachaPotionList = (ArrayList<GachaPotionEffect>) itemData.get(key);
+                for(int i = 0;i < gachaPotionList.size();i++){
+                    Map<String, String> map = gachaPotionList.get(i).getStringData();
+                    config.set("index." + id +"." + key + "." + i + ".effect", map.get("effect"));
+                    config.set("index." + id +"." + key + "." + i + ".level", map.get("level"));
+                    config.set("index." + id +"." + key + "." + i + ".time", map.get("time"));
+                }
+            }else if(key.equals("givePlayerItemBank") || key.equals("takePlayerItemBank")){
+                ArrayList<GachaItemBankData> gachaItemBankData = (ArrayList<GachaItemBankData>) itemData.get(key);
+                for(int i = 0;i < gachaItemBankData.size();i++){
+                    Map<String, String> map = gachaItemBankData.get(i).getStringData();
+                    config.set("index." + id +"." + key + "." + i + ".itemType", map.get("itemType"));
+                    config.set("index." + id +"." + key + "." + i + ".itemAmount", map.get("itemAmount"));
+                }
+            }else{
+                config.set("index." + id + "." + key, itemData.get(key));
+            }
         }
     }
 
-    private ArrayList<GachaItemStack> compressItemStack(ArrayList<GachaItemStack> items){
+    private void createFileIfNotExists(File file){
+        if(!file.exists()){
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private ArrayList<GachaItemStack> compressItemStack(ArrayList<GachaFinalItemStack> items){
         ArrayList<GachaItemStack> out = new ArrayList<>();
-        for (GachaItemStack item : items) {
-            if (!out.contains(item)) {
-                out.add(item);
+        for (GachaFinalItemStack item : items) {
+            if (!out.contains(item.getItemStack())) {
+                out.add(item.getItemStack());
             }
         }
         return out;

@@ -4,10 +4,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by sho on 2018/07/09.
  */
-class GachaSound {
+public class GachaSound {
     Sound sound;
     float volume;
     float pitch;
@@ -34,5 +37,13 @@ class GachaSound {
                 pp.playSound(pp.getLocation(), sound, volume, pitch);
             }
         }
+    }
+
+    public Map<String, String> getStringData(){
+        Map<String, String> out = new HashMap<>();
+        out.put("sound", String.valueOf(sound));
+        out.put("volume", String.valueOf(volume));
+        out.put("pitch", String.valueOf(pitch));
+        return out;
     }
 }

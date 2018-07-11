@@ -3,10 +3,13 @@ package com.shojabon.man10gachav2.data;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by sho on 2018/07/01.
  */
-class GachaTitleText {
+public class GachaTitleText {
     String mainText;
     String subText;
     int fadeIntTime;
@@ -36,5 +39,15 @@ class GachaTitleText {
                 p.sendTitle(mainText, subText, fadeIntTime,time,fadeoutTime);
             }
         }
+    }
+
+    public Map<String, String> getStringData(){
+        Map<String, String> out = new HashMap<>();
+        out.put("mainText", String.valueOf(mainText));
+        out.put("subText", String.valueOf(subText));
+        out.put("fadeInTime", String.valueOf(fadeIntTime));
+        out.put("time", String.valueOf(time));
+        out.put("fadeOutTime", String.valueOf(fadeoutTime));
+        return out;
     }
 }

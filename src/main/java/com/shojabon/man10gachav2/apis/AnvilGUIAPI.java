@@ -14,6 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.function.BiFunction;
+
 /**
  * Created by sho on 2018/07/03.
  */
@@ -27,7 +29,7 @@ public class AnvilGUIAPI {
 
 
 
-    public AnvilGUIAPI(JavaPlugin plugin, Player p, String title){
+    public AnvilGUIAPI(JavaPlugin plugin, Player p, String title, BiFunction<String, String, String> a){
         anvil = Bukkit.createInventory(null, InventoryType.ANVIL);
         ItemStack item = new ItemStack(Material.EMERALD_BLOCK);
         ItemMeta itemMeta = item.getItemMeta();

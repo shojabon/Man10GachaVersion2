@@ -2,6 +2,7 @@ package com.shojabon.man10gachav2;
 
 import com.shojabon.man10gachav2.apis.SItemStack;
 import com.shojabon.man10gachav2.data.*;
+import com.shojabon.man10gachav2.enums.GachaSpinAlgorithm;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -19,10 +20,14 @@ import java.util.Map;
 public class Man10GachaAPI {
     Plugin plugin = Bukkit.getPluginManager().getPlugin("Man10GachaV2");
 
-    public void createNewGacha(String gachaName, String title,ArrayList<GachaFinalItemStack> itemStacks){
-        File file = new File(plugin.getDataFolder(), "gacha" + File.separator + gachaName + ".yml");
+    public void createNewGacha(GachaSettings gachaSettings ,ArrayList<GachaFinalItemStack> itemStacks){
+        File file = new File(plugin.getDataFolder(), "gacha" + File.separator + gachaSettings.name + ".yml");
         createFileIfNotExists(file);
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+        Map<String, Object> settingsMap = gachaSettings.getStringData();
+        printSettings(settingsMap, config);
+
         ArrayList<GachaItemStack> index = compressItemStack(itemStacks);
         String out = "";
         for(int i = 0;i < itemStacks.size();i++){
@@ -41,7 +46,23 @@ public class Man10GachaAPI {
         }
     }
 
-    public void printItemIndex(Map<String, Object> itemData, FileConfiguration config, int id){
+    private void printSettings(Map<String, Object> settings, FileConfiguration config){
+        for(String key : settings.keySet()) {
+            if (key.equals("spinSound")) {
+                Map<String, String> soundMap = ((GachaSound) settings.get("spinSound")).getStringData();
+                config.set("settings." + key + ".sound", soundMap.get("sound"));
+                config.set("settings." + key + ".volume", soundMap.get("volume"));
+                config.set("settings." + key + ".pitch", soundMap.get("pitch"));
+            }else if(key.equals("icon")){
+                config.set("settings." + key, new SItemStack((ItemStack) settings.get(key)).toBase64());
+            }else if(key.equals("spinAlgorithm")){
+                config.set("settings." + key, settings.get("spinAlgorithm").toString());
+            }else{
+                config.set("settings." + key, settings.get(key));
+            }
+        }
+    }
+    private void printItemIndex(Map<String, Object> itemData, FileConfiguration config, int id){
         for(String key: itemData.keySet()){
             if(key.equals("commands") || key.equals("broadcastMessage") || key.equals("playerMessage") || key.equals("pexGroup") || key.equals("pexPermission")){
                 config.set("index." + id +"." + key, itemData.get(key));

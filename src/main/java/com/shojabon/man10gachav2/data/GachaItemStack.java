@@ -43,7 +43,9 @@ public class GachaItemStack {
     public boolean killPlayer = false;
 
 
-
+    public GachaItemStack(ItemStack item){
+        this.item = item;
+    }
     public GachaItemStack(ItemStack item,
                           ArrayList<ItemStack> outputItems,
                           ArrayList<String> commands,

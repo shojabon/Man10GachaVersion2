@@ -1,21 +1,25 @@
 package com.shojabon.man10gachav2;
 
+import com.mysql.fabric.xmlrpc.base.Array;
 import com.shojabon.man10gachav2.apis.AnvilGUIAPI;
 import com.shojabon.man10gachav2.apis.DatabaseConnector;
 import com.shojabon.man10gachav2.apis.GachaVault;
 import com.shojabon.man10gachav2.apis.SItemStack;
 import com.shojabon.man10gachav2.data.GachaFinalItemStack;
 import com.shojabon.man10gachav2.data.GachaItemStack;
+import com.shojabon.man10gachav2.data.GachaSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 
 public final class Man10GachaV2 extends JavaPlugin {
@@ -78,18 +82,16 @@ public final class Man10GachaV2 extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(command.getName().equalsIgnoreCase("gacha")){
-            GachaItemStack item1 = new GachaItemStack(new SItemStack(Material.PAPER).setDisplayname("test1").build(),null, null,false,null,null,null,
-                    null,null,null,null,null,null,null,null,0,0,0,0
-                    ,null,null,false);
-            GachaItemStack item2 = new GachaItemStack(new SItemStack(Material.DIAMOND).setDisplayname("test2").build(),null, null,true,null,null,null,
-                    null,null,null,null,null,null,null,null,0,1000,0,0
-                    ,null,null,false);
-            GachaFinalItemStack fItem1 = new GachaFinalItemStack(item1, 10);
-            GachaFinalItemStack fItem2 = new GachaFinalItemStack(item2, 30);
-            ArrayList<GachaFinalItemStack> items = new ArrayList<>();
-            items.add(fItem1);
-            items.add(fItem2);
-            api.createNewGacha("test", "testt", items);
+            GachaItemStack item1 = new GachaItemStack(new ItemStack(Material.DIAMOND));
+            GachaItemStack item2 = new GachaItemStack(new ItemStack(Material.OBSIDIAN));
+            GachaFinalItemStack fitem1 = new GachaFinalItemStack(item1, 10);
+            GachaFinalItemStack fitem2 = new GachaFinalItemStack(item2, 20);
+            ArrayList<GachaFinalItemStack> itemList = new ArrayList<>();
+            itemList.add(fitem1);
+            itemList.add(fitem2);
+            GachaSettings settings = new GachaSettings("test");
+            api.createNewGacha(settings, itemList);
+
         }
         return false;
     }

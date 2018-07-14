@@ -27,7 +27,6 @@ public class GachaSettings {
     public ItemStack icon = new ItemStack(Material.DIAMOND);
     public long startOn = 0;
     public long endOn = 0;
-    public boolean enableTimer = false;
 
     public GachaSettings(String name){
         this.name = name;
@@ -46,8 +45,7 @@ public class GachaSettings {
                          String usePermission,
                          ItemStack icon,
                          long startOn,
-                         long endOn,
-                         boolean enableTimer){
+                         long endOn){
         this.name = name;
         this.title = title;
         this.startDelay = startDelay;
@@ -62,19 +60,25 @@ public class GachaSettings {
         this.icon = icon;
         this.startOn = startOn;
         this.endOn = endOn;
-        this.enableTimer = enableTimer;
     }
 
     public Map<String, Object> getStringData() {
         Map<String, Object> map = new HashMap<>();
         map.put("name", this.name);
         map.put("title", this.title);
-        map.put("forceOpen", this.forceOpen);
-        map.put("showPercentage", this.showPercentage);
+        if(forceOpen){
+            map.put("forceOpen", true);
+        }
+        if(showPercentage){
+            map.put("showPercentage", true);
+        }
         map.put("locked", this.locked);
-        map.put("enableTime", this.enableTimer);
-        map.put("startOn", this.startOn);
-        map.put("endOn", this.endOn);
+        if(startOn != 0 && startOn >= 1){
+            map.put("startOn", this.startOn);
+        }
+        if(endOn != 0 && endOn>= 1){
+            map.put("endOn", this.endOn);
+        }
         if (startDelay != 0 && startDelay >= 1) {
             map.put("startDelay", this.startDelay);
         }
@@ -102,7 +106,9 @@ public class GachaSettings {
             map.put("usePermission", usePermission);
         }
         if (icon != null) {
-            map.put("icon", icon);
+            if(!icon.equals(new ItemStack(Material.DIAMOND))){
+                map.put("icon", icon);
+            }
         }
         return map;
     }

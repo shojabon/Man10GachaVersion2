@@ -20,13 +20,16 @@ import java.util.Map;
 public class Man10GachaAPI {
     Plugin plugin = Bukkit.getPluginManager().getPlugin("Man10GachaV2");
 
-    public void createNewGacha(GachaSettings gachaSettings ,ArrayList<GachaFinalItemStack> itemStacks){
+    public void createNewGacha(GachaSettings gachaSettings ,ArrayList<GachaPayment> payments, ArrayList<GachaFinalItemStack> itemStacks){
         File file = new File(plugin.getDataFolder(), "gacha" + File.separator + gachaSettings.name + ".yml");
         createFileIfNotExists(file);
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
         Map<String, Object> settingsMap = gachaSettings.getStringData();
         printSettings(settingsMap, config);
+
+        printPayment(payments, config);
+
 
         ArrayList<GachaItemStack> index = compressItemStack(itemStacks);
         String out = "";
@@ -46,15 +49,25 @@ public class Man10GachaAPI {
         }
     }
 
+    private void printPayment(ArrayList<GachaPayment> payments, FileConfiguration config){
+        for(int i = 0;i < payments.size();i++){
+            Map<String, String> data = payments.get(i).getStringData();
+            for(String key: data.keySet()){
+                config.set("payments." + i + "." + key, data.get(key));
+            }
+        }
+    }
+
+
     private void printSettings(Map<String, Object> settings, FileConfiguration config){
         for(String key : settings.keySet()) {
-            if (key.equals("spinSound")) {
-                Map<String, String> soundMap = ((GachaSound) settings.get("spinSound")).getStringData();
+            if (key.equals("sound")) {
+                Map<String, String> soundMap = ((GachaSound) settings.get(key)).getStringData();
                 config.set("settings." + key + ".sound", soundMap.get("sound"));
                 config.set("settings." + key + ".volume", soundMap.get("volume"));
                 config.set("settings." + key + ".pitch", soundMap.get("pitch"));
             }else if(key.equals("icon")){
-                config.set("settings." + key, new SItemStack((ItemStack) settings.get(key)).toBase64());
+                config.set("settings." + key, new SItemStack((ItemStack) settings.get(key)).setAmount(1).toBase64());
             }else if(key.equals("spinAlgorithm")){
                 config.set("settings." + key, settings.get("spinAlgorithm").toString());
             }else{
@@ -62,6 +75,8 @@ public class Man10GachaAPI {
             }
         }
     }
+
+
     private void printItemIndex(Map<String, Object> itemData, FileConfiguration config, int id){
         for(String key: itemData.keySet()){
             if(key.equals("commands") || key.equals("broadcastMessage") || key.equals("playerMessage") || key.equals("pexGroup") || key.equals("pexPermission")){
@@ -70,7 +85,7 @@ public class Man10GachaAPI {
                 ArrayList<String> out = new ArrayList<>();
                 ArrayList<ItemStack> items = (ArrayList<ItemStack>) itemData.get(key);
                 for(int i = 0;i < items.size();i++){
-                    out.add(new SItemStack(items.get(i)).toBase64());
+                    out.add(new SItemStack(items.get(i)).setAmount(1).toBase64());
                 }
                 config.set("index." + id +"." + key, out);
             }else if(key.equals("playerTitleText") || key.equals("broadcastTitleText")){

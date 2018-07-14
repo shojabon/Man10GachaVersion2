@@ -41,7 +41,7 @@ public class GachaSound {
 
     public Map<String, String> getStringData(){
         Map<String, String> out = new HashMap<>();
-        out.put("sound", String.valueOf(sound));
+        out.put("sound", sound.toString());
         out.put("volume", String.valueOf(volume));
         out.put("pitch", String.valueOf(pitch));
         return out;

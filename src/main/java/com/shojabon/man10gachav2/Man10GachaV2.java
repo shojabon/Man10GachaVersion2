@@ -1,13 +1,13 @@
 package com.shojabon.man10gachav2;
 
 import com.shojabon.man10gachav2.apis.*;
-import com.shojabon.man10gachav2.data.GachaBannerDictionary;
-import com.shojabon.man10gachav2.data.GachaFinalItemStack;
-import com.shojabon.man10gachav2.data.GachaItemStack;
-import com.shojabon.man10gachav2.data.GachaSettings;
+import com.shojabon.man10gachav2.data.*;
+import com.shojabon.man10gachav2.data.GachaPaymentData.GachaItemStackPayment;
+import com.shojabon.man10gachav2.data.GachaPaymentData.GachaVaultPayment;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.command.Command;
@@ -84,15 +84,19 @@ public final class Man10GachaV2 extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(command.getName().equalsIgnoreCase("gacha")){
 
+            GachaFinalItemStack item1 = new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.DIAMOND_BLOCK)), 10);
 
+            GachaFinalItemStack item2 = new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.EMERALD_BLOCK)), 30);
 
-            new NumberInputAPI(this, "§c§lサンプルガチャの設定値を入力", ((Player) sender), 8, (inventoryClickEvent, integer) -> {
-                Bukkit.broadcastMessage("you put int " + integer);
-                Bukkit.broadcastMessage("player name " + inventoryClickEvent.getWhoClicked().getName());
-                return null;
-            });
+            ArrayList<GachaFinalItemStack> items = new ArrayList<>();
+            items.add(item1);
+            items.add(item2);
 
+            ArrayList<GachaPayment>payments = new ArrayList<>();
+            payments.add(new GachaPayment(new GachaVaultPayment(10000)));
+            payments.add(new GachaPayment(new GachaItemStackPayment(new ItemStack(Material.DIAMOND), 100)));
 
+            api.createNewGacha(new GachaSettings("test1"), payments, items);
 
         }
         return false;

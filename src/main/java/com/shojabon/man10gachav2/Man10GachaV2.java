@@ -1,19 +1,20 @@
 package com.shojabon.man10gachav2;
 
-import com.mysql.fabric.xmlrpc.base.Array;
-import com.shojabon.man10gachav2.apis.AnvilGUIAPI;
-import com.shojabon.man10gachav2.apis.DatabaseConnector;
-import com.shojabon.man10gachav2.apis.GachaVault;
-import com.shojabon.man10gachav2.apis.SItemStack;
+import com.shojabon.man10gachav2.apis.*;
+import com.shojabon.man10gachav2.data.GachaBannerDictionary;
 import com.shojabon.man10gachav2.data.GachaFinalItemStack;
 import com.shojabon.man10gachav2.data.GachaItemStack;
 import com.shojabon.man10gachav2.data.GachaSettings;
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -82,15 +83,16 @@ public final class Man10GachaV2 extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(command.getName().equalsIgnoreCase("gacha")){
-            GachaItemStack item1 = new GachaItemStack(new ItemStack(Material.DIAMOND));
-            GachaItemStack item2 = new GachaItemStack(new ItemStack(Material.OBSIDIAN));
-            GachaFinalItemStack fitem1 = new GachaFinalItemStack(item1, 10);
-            GachaFinalItemStack fitem2 = new GachaFinalItemStack(item2, 20);
-            ArrayList<GachaFinalItemStack> itemList = new ArrayList<>();
-            itemList.add(fitem1);
-            itemList.add(fitem2);
-            GachaSettings settings = new GachaSettings("test");
-            api.createNewGacha(settings, itemList);
+
+
+
+            new NumberInputAPI(this, "§c§lサンプルガチャの設定値を入力", ((Player) sender), 8, (inventoryClickEvent, integer) -> {
+                Bukkit.broadcastMessage("you put int " + integer);
+                Bukkit.broadcastMessage("player name " + inventoryClickEvent.getWhoClicked().getName());
+                return null;
+            });
+
+
 
         }
         return false;

@@ -63,7 +63,7 @@ public class GachaSettings {
                     this.spinSound = (GachaSound) settings.get(key);
                     break;
                 case "spinSpeed":
-                    this.startDelay = Integer.valueOf(String.valueOf(settings.get(key)));
+                    this.spinSpeed = Integer.valueOf(String.valueOf(settings.get(key)));
                     break;
                 case "spinTime":
                     this.spinTime = Integer.valueOf(String.valueOf(settings.get(key)));

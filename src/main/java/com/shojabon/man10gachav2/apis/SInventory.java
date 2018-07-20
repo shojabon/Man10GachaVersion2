@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
  * Created by sho on 2018/06/18.
  */
 
-class SInventory {
+public class SInventory {
 
     Inventory inv = null;
     String title;

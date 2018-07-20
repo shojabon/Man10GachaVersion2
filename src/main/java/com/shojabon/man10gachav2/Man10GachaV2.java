@@ -1,27 +1,15 @@
 package com.shojabon.man10gachav2;
 
 import com.shojabon.man10gachav2.apis.*;
-import com.shojabon.man10gachav2.data.*;
-import com.shojabon.man10gachav2.data.GachaPaymentData.GachaItemStackPayment;
-import com.shojabon.man10gachav2.data.GachaPaymentData.GachaVaultPayment;
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.block.banner.Pattern;
-import org.bukkit.block.banner.PatternType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiFunction;
 
 public final class Man10GachaV2 extends JavaPlugin {
 
@@ -83,9 +71,8 @@ public final class Man10GachaV2 extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(command.getName().equalsIgnoreCase("gacha")){
-            GachaGame gane = new GachaGame("test1");
-            Bukkit.broadcastMessage(String.valueOf(gane.itemIndex.size()));
-
+            GachaGame gacha = new GachaGame("test", this);
+            gacha.play(((Player)sender));
         }
         return false;
     }

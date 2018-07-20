@@ -1,5 +1,6 @@
 package com.shojabon.man10gachav2;
 
+import com.shojabon.man10gachav2.apis.SInventory;
 import com.shojabon.man10gachav2.apis.SItemStack;
 import com.shojabon.man10gachav2.data.*;
 import com.shojabon.man10gachav2.data.GachaPaymentData.GachaItemBankPayment;
@@ -8,19 +9,24 @@ import com.shojabon.man10gachav2.data.GachaPaymentData.GachaVaultPayment;
 import com.shojabon.man10gachav2.enums.GachaPaymentType;
 import com.shojabon.man10gachav2.enums.GachaSpinAlgorithm;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by sho on 2018/06/23.
@@ -28,16 +34,87 @@ import java.util.Map;
 public class GachaGame {
     private GachaSettings settings;
     private ArrayList<GachaPayment> payments;
-    ArrayList<GachaItemStack> itemIndex;
+    private ArrayList<GachaItemStack> itemIndex;
+    private Inventory gameInventory;
+    private Listener listener = new Listener();
+    private HashMap<UUID, Inventory> inventoryMap = new HashMap<>();
+    private JavaPlugin plugin;
 
-
-    public GachaGame(String name){
+    public GachaGame(String name, JavaPlugin plugin){
+        this.plugin = plugin;
         File file = new File(Bukkit.getPluginManager().getPlugin("Man10GachaV2").getDataFolder(), "gacha" + File.separator + name + ".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         settings = new GachaSettings(getSettingsMap(config));
-        payments = getPaymentList(config);
         itemIndex = getItemStackMap(config);
+        payments = getPaymentList(config);
+        gameInventory = createDefaultInventory(settings.title);
+        Bukkit.getPluginManager().registerEvents(listener, this.plugin);
     }
+
+    private Inventory createDefaultInventory(String title){
+        SInventory inv = new SInventory(3, title);
+        inv.setItem(new int[]{0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26}, new SItemStack(Material.STAINED_GLASS_PANE).setDamage(7).setDisplayname("").build()).
+        setItem(new int[]{4, 22}, new SItemStack(Material.STAINED_GLASS_PANE).setDamage(14).setDisplayname("").build());
+        return inv.build();
+    }
+
+    public void play(Player p){
+        Inventory inv = gameInventory;
+        inventoryMap.put(p.getUniqueId(), inv);
+        p.openInventory(inv);
+        Runnable r = () -> {
+            int i = 0;
+            long spinSpeed = (long) (1000/settings.spinSpeed);
+            while (i < 10000){
+                roll(inventoryMap.get(p.getUniqueId()));
+                inventoryMap.get(p.getUniqueId()).setItem(17, itemIndex.get(new Random().nextInt(itemIndex.size())).item);
+                try {
+                    Thread.sleep(spinSpeed);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                i++;
+            }
+            inventoryMap.remove(p.getUniqueId());
+            p.closeInventory();
+        };
+        Thread t = new Thread(r);
+        t.start();
+    }
+
+    private void roll(Inventory inv){
+        for(int i = 9;i < 17;i++){
+            inv.setItem(i, inv.getItem(i + 1));
+        }
+    }
+
+
+    private class Listener implements org.bukkit.event.Listener {
+
+        @EventHandler
+        public void onClick(InventoryClickEvent e){
+            if(!inventoryMap.containsKey(e.getWhoClicked().getUniqueId())){
+                return;
+            }
+            e.setCancelled(true);
+        }
+
+        @EventHandler
+        public void onClose(InventoryCloseEvent e){
+            if(settings.forceOpen){
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        e.getPlayer().openInventory(inventoryMap.get(e.getPlayer().getUniqueId()));
+                    }
+                }.runTaskLater(plugin, 5);
+                return;
+            }
+            inventoryMap.remove(e.getPlayer().getUniqueId());
+        }
+    }
+
+
 
     private Map<String, Object> getSettingsMap(FileConfiguration config){
         Map<String, Object> map = new HashMap<>();
@@ -54,6 +131,15 @@ public class GachaGame {
                 case "icon":
                     map.put("icon", new SItemStack(config.getString("settings.icon")).build());
                     break;
+                case "spinSpeed":
+                    int speed = config.getInt("settings.spinSpeed");
+                    if(speed > 1000){
+                        speed = 1000;
+                    }
+                    if(speed < 1){
+                        speed = 1;
+                    }
+                    map.put(keys, speed);
                 default:
                     map.put(keys, config.get("settings." + keys));
                     break;
@@ -90,7 +176,7 @@ public class GachaGame {
             for(String key: config.getConfigurationSection("index." + numKey).getKeys(false)){
                 switch (key){
                     case "item":
-                        map.put(key, new SItemStack(config.getString("index." + numKey + "." + key)));
+                        map.put(key, new SItemStack(config.getString("index." + numKey + "." + key)).build());
                         break;
                     case "commands":
                         map.put(key, config.getStringList("index." + numKey + "." + key));

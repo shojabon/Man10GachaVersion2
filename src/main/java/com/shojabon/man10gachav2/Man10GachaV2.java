@@ -83,7 +83,9 @@ public final class Man10GachaV2 extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(command.getName().equalsIgnoreCase("gacha")){
-            new GachaGame("test1");
+            GachaGame gane = new GachaGame("test1");
+            Bukkit.broadcastMessage(String.valueOf(gane.itemIndex.size()));
+
         }
         return false;
     }

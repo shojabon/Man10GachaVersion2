@@ -46,6 +46,80 @@ public class GachaItemStack {
     public GachaItemStack(ItemStack item){
         this.item = item;
     }
+
+    public GachaItemStack(Map<String, Object> settings){
+        for(String key: settings.keySet()){
+            switch(key){
+                case "item":
+                    item = ((ItemStack) settings.get(key));
+                    break;
+                case "commands":
+                    commands = ((ArrayList<String>) settings.get(key));
+                    break;
+                case "broadcastMessage":
+                    broadcastMessage = ((ArrayList<String>) settings.get(key));
+                    break;
+                case "playerMessage":
+                    playerMessage = ((ArrayList<String>) settings.get(key));
+                    break;
+                case "giveItem":
+                    giveItem = Boolean.getBoolean(String.valueOf(settings.get(key)));
+                    break;
+                case "playerTitleText":
+                    playerTitleText = ((GachaTitleText) settings.get(key));
+                    break;
+                case "broadcastTitleText":
+                    broadcastTitleText = ((GachaTitleText) settings.get(key));
+                    break;
+                case "items":
+                    items = ((ArrayList<ItemStack>) settings.get(key));
+                    break;
+                case "pexGroup":
+                    pexGroup = ((ArrayList<String>) settings.get(key));
+                    break;
+                case "pexPermission":
+                    pexPermission = ((ArrayList<String>) settings.get(key));
+                    break;
+                case "teleport":
+                    teleport = ((GachaTeleport) settings.get(key));
+                    break;
+                case "broadcastSound":
+                    broadcastSound = ((GachaSound) settings.get(key));
+                    break;
+                case "playerSound":
+                    playerSound = ((GachaSound) settings.get(key));
+                    break;
+                case "playerPotionEffect":
+                    playerPotionEffect = ((ArrayList<GachaPotionEffect>)settings.get(key));
+                    break;
+                case "broadcastPotionEffect":
+                    broadcastPotionEffect = ((ArrayList<GachaPotionEffect>)settings.get(key));
+                    break;
+                case "givePlayerItemBank":
+                    givePlayerItemBank = ((ArrayList<GachaItemBankData>) settings.get(key));
+                    break;
+                case "takePlayerItemBank":
+                    takePlayerItemBank = ((ArrayList<GachaItemBankData>) settings.get(key));
+                    break;
+                case "givePlayerMoney":
+                    givePlayerMoney = Long.parseLong(String.valueOf(settings.get(key)));
+                    break;
+                case "takePlayerMoney":
+                    takePlayerMoney = Long.parseLong(String.valueOf(settings.get(key)));
+                    break;
+                case "giveServerMoney":
+                    giveServerMoney = Long.parseLong(String.valueOf(settings.get(key)));
+                    break;
+                case "takeServerMoney":
+                    takeServerMoney = Long.parseLong(String.valueOf(settings.get(key)));
+                    break;
+                case "killPLayer":
+                    killPlayer = Boolean.getBoolean(String.valueOf(settings.get(key)));
+                    break;
+            }
+        }
+    }
+
     public GachaItemStack(ItemStack item,
                           ArrayList<ItemStack> outputItems,
                           ArrayList<String> commands,

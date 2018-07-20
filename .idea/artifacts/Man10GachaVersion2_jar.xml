@@ -3,9 +3,6 @@
     <output-path>$PROJECT_DIR$/../../minecraft server/plugins</output-path>
     <root id="archive" name="Man10GachaVersion2.jar">
       <element id="module-output" name="Man10GachaVersion2" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/../../minecraft server/plugins/Vault.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/../../minecraft server/plugins/Essentials-2.x-SNAPSHOT.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/../../minecraft server/plugins/Man10VaultAPIPlus.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

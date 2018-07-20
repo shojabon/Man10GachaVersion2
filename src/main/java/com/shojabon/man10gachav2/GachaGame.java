@@ -28,7 +28,7 @@ import java.util.Map;
 public class GachaGame {
     private GachaSettings settings;
     private ArrayList<GachaPayment> payments;
-    private ArrayList<GachaItemStack> itemIndex;
+    ArrayList<GachaItemStack> itemIndex;
 
 
     public GachaGame(String name){
@@ -36,6 +36,7 @@ public class GachaGame {
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         settings = new GachaSettings(getSettingsMap(config));
         payments = getPaymentList(config);
+        itemIndex = getItemStackMap(config);
     }
 
     private Map<String, Object> getSettingsMap(FileConfiguration config){
@@ -83,8 +84,9 @@ public class GachaGame {
 
     private ArrayList<GachaItemStack> getItemStackMap(FileConfiguration config){
         ConfigurationSection configurationSection = config.getConfigurationSection("index");
-        Map<String, Object> map = new HashMap<>();
+        ArrayList<GachaItemStack> index = new ArrayList<>();
         for(String numKey : configurationSection.getKeys(false)){
+            Map<String, Object> map = new HashMap<>();
             for(String key: config.getConfigurationSection("index." + numKey).getKeys(false)){
                 switch (key){
                     case "item":
@@ -204,7 +206,8 @@ public class GachaGame {
                         break;
                 }
             }
+            index.add(new GachaItemStack(map));
         }
-        return map;
+        return index;
     }
 }

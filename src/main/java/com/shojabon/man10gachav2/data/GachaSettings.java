@@ -32,6 +32,55 @@ public class GachaSettings {
         this.name = name;
     }
 
+    public GachaSettings(Map<String, Object> settings){
+        for(String key: settings.keySet()){
+            switch (key){
+                case "name":
+                    this.name = String.valueOf(settings.get(key));
+                    break;
+                case "title":
+                    this.title = String.valueOf(settings.get(key));
+                    break;
+                case "forceOpen":
+                    this.forceOpen = Boolean.valueOf(String.valueOf(settings.get(key)));
+                    break;
+                case "showPercentage":
+                    this.showPercentage = Boolean.valueOf(String.valueOf(settings.get(key)));
+                    break;
+                case "locked":
+                    this.locked= Boolean.valueOf(String.valueOf(settings.get(key)));
+                    break;
+                case "startOn":
+                    this.startOn = Long.valueOf(String.valueOf(settings.get(key)));
+                    break;
+                case "endOn":
+                    this.endOn = Long.valueOf(String.valueOf(settings.get(key)));
+                    break;
+                case "startDelay":
+                    this.startDelay = Integer.valueOf(String.valueOf(settings.get(key)));
+                    break;
+                case "sound":
+                    this.spinSound = (GachaSound) settings.get(key);
+                    break;
+                case "spinSpeed":
+                    this.startDelay = Integer.valueOf(String.valueOf(settings.get(key)));
+                    break;
+                case "spinTime":
+                    this.spinTime = Integer.valueOf(String.valueOf(settings.get(key)));
+                    break;
+                case "spinAlgorithm":
+                    this.spinAlgorithm = (GachaSpinAlgorithm) settings.get(key);
+                    break;
+                case "userPermission":
+                    this.usePermission = String.valueOf(settings.get(key));
+                    break;
+                case "icon":
+                    this.icon = (ItemStack) settings.get(key);
+                    break;
+            }
+        }
+    }
+
     public GachaSettings(String name,
                          String title,
                          int startDelay,
@@ -112,4 +161,6 @@ public class GachaSettings {
         }
         return map;
     }
+
+
 }

@@ -49,6 +49,7 @@ public class Man10GachaAPI {
         }
     }
 
+
     private void printPayment(ArrayList<GachaPayment> payments, FileConfiguration config){
         for(int i = 0;i < payments.size();i++){
             Map<String, String> data = payments.get(i).getStringData();
@@ -85,7 +86,7 @@ public class Man10GachaAPI {
                 ArrayList<String> out = new ArrayList<>();
                 ArrayList<ItemStack> items = (ArrayList<ItemStack>) itemData.get(key);
                 for(int i = 0;i < items.size();i++){
-                    out.add(new SItemStack(items.get(i)).setAmount(1).toBase64());
+                    out.add(new SItemStack(items.get(i)).toBase64());
                 }
                 config.set("index." + id +"." + key, out);
             }else if(key.equals("playerTitleText") || key.equals("broadcastTitleText")){

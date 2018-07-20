@@ -83,21 +83,7 @@ public final class Man10GachaV2 extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(command.getName().equalsIgnoreCase("gacha")){
-
-            GachaFinalItemStack item1 = new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.DIAMOND_BLOCK)), 10);
-
-            GachaFinalItemStack item2 = new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.EMERALD_BLOCK)), 30);
-
-            ArrayList<GachaFinalItemStack> items = new ArrayList<>();
-            items.add(item1);
-            items.add(item2);
-
-            ArrayList<GachaPayment>payments = new ArrayList<>();
-            payments.add(new GachaPayment(new GachaVaultPayment(10000)));
-            payments.add(new GachaPayment(new GachaItemStackPayment(new ItemStack(Material.DIAMOND), 100)));
-
-            api.createNewGacha(new GachaSettings("test1"), payments, items);
-
+            new GachaGame("test1");
         }
         return false;
     }

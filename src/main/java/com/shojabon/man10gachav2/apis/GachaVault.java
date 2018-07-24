@@ -62,6 +62,16 @@ public class GachaVault {
         }
     }
 
+    public void giveMoney(UUID uuid, double value){
+        if(vaultMode == GachaVaultMode.VAULT_API_PLUS){
+            man10VaultAPI.transferMoneyCountryToPlayer(uuid, value, TransactionCategory.GAME, TransactionType.FEE, "Man10GachaPayment");
+            return;
+        }else if(vaultMode == GachaVaultMode.VAULT){
+            vault.silentDeposit(uuid, value);
+            return;
+        }
+    }
+
     public double getBalance(UUID uuid){
         if(vaultMode == GachaVaultMode.VAULT_API_PLUS){
             return man10VaultAPI.getBalance(uuid);

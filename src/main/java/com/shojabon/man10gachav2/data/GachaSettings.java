@@ -17,7 +17,6 @@ public class GachaSettings {
     public String title = "Gacha";
     public int startDelay = 0;
     public GachaSound spinSound = new GachaSound(Sound.BLOCK_DISPENSER_DISPENSE, 1, 1);
-    public int spinTime = 1;
     public float spinSpeed = 1;
     public GachaSpinAlgorithm spinAlgorithm = GachaSpinAlgorithm.RAMP;
     public boolean forceOpen = false;
@@ -65,9 +64,6 @@ public class GachaSettings {
                 case "spinSpeed":
                     this.spinSpeed = Integer.valueOf(String.valueOf(settings.get(key)));
                     break;
-                case "spinTime":
-                    this.spinTime = Integer.valueOf(String.valueOf(settings.get(key)));
-                    break;
                 case "spinAlgorithm":
                     this.spinAlgorithm = (GachaSpinAlgorithm) settings.get(key);
                     break;
@@ -99,7 +95,6 @@ public class GachaSettings {
         this.title = title;
         this.startDelay = startDelay;
         this.spinSound = spinSound;
-        this.spinTime = spinTime;
         this.spinSpeed = spinSpeed;
         this.spinAlgorithm = spinAlgorithm;
         this.forceOpen = forceOpen;
@@ -140,11 +135,6 @@ public class GachaSettings {
             map.put("spinSpeed", spinSpeed);
         } else {
             map.put("spinSpeed", 1);
-        }
-        if (spinTime < 0) {
-            map.put("spinTime", spinTime);
-        } else {
-            map.put("spinTime", 1);
         }
         if (spinAlgorithm != null) {
             map.put("spinAlgorithm", spinAlgorithm);

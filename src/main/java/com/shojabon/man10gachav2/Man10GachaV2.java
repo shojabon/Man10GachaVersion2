@@ -1,15 +1,22 @@
 package com.shojabon.man10gachav2;
 
 import com.shojabon.man10gachav2.apis.*;
+import com.shojabon.man10gachav2.data.GachaFinalItemStack;
+import com.shojabon.man10gachav2.data.GachaItemStack;
+import com.shojabon.man10gachav2.data.GachaPayment;
+import com.shojabon.man10gachav2.data.GachaPaymentData.GachaVaultPayment;
+import com.shojabon.man10gachav2.data.GachaSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public final class Man10GachaV2 extends JavaPlugin {
 
@@ -35,7 +42,7 @@ public final class Man10GachaV2 extends JavaPlugin {
         // Plugin shutdown logic
     }
 
-    String prefix = "§a[§dMan10Gacha§eV2§a]§f";
+    String prefix = "§6[§aMg§fac§dha§5V2§6]§f";
 
     public void createLog(String message){
         Bukkit.getLogger().info(prefix + message);
@@ -71,8 +78,18 @@ public final class Man10GachaV2 extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(command.getName().equalsIgnoreCase("gacha")){
-            GachaGame gacha = new GachaGame("test", this);
-            gacha.play(((Player)sender));
+            //ArrayList<GachaPayment> payment = new ArrayList<>();
+            //payment.add(new GachaPayment(new GachaVaultPayment(1000)));
+            //ArrayList<GachaFinalItemStack> items = new ArrayList<>();
+            //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.POTATO)), 10));
+            //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.DIAMOND)), 10));
+            //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.GOLD_INGOT)), 10));
+            //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.IRON_INGOT)), 10));
+            //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.EMERALD)), 10));
+            //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.TNT)), 10));
+            //api.createNewGacha(new GachaSettings("test1"), payment, items);
+            GachaGame game = new GachaGame("test1", this);
+            game.play(((Player)sender));
         }
         return false;
     }

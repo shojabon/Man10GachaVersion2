@@ -17,6 +17,16 @@ public class GachaItemBankData {
         this.amount = amount;
     }
 
+    public int getId(){
+        return id;
+    }
+
+    public long getAmount(){
+        return amount;
+    }
+
+
+
     public Map<String, String> getStringData(){
         Map<String, String> out = new HashMap<>();
         out.put("itemType", String.valueOf(id));

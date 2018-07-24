@@ -1,5 +1,8 @@
 package com.shojabon.man10gachav2;
 
+import com.shojabon.man10gachav2.GachaAlgorithm.GachaSpinAlgorithmManager;
+import com.shojabon.man10gachav2.apis.GachaItemBank;
+import com.shojabon.man10gachav2.apis.GachaVault;
 import com.shojabon.man10gachav2.apis.SInventory;
 import com.shojabon.man10gachav2.apis.SItemStack;
 import com.shojabon.man10gachav2.data.*;
@@ -16,7 +19,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
@@ -37,9 +39,12 @@ public class GachaGame {
     private ArrayList<GachaItemStack> itemIndex;
     private Inventory gameInventory;
     private Listener listener = new Listener();
+    private List<GachaFinalItemStack> itemStacks;
     private HashMap<UUID, Inventory> inventoryMap = new HashMap<>();
+    private HashMap<UUID, ArrayList<Integer>> indexMap = new HashMap<>();
     private JavaPlugin plugin;
-
+    private GachaVault vault;
+    private GachaItemBank itemBank;
     public GachaGame(String name, JavaPlugin plugin){
         this.plugin = plugin;
         File file = new File(Bukkit.getPluginManager().getPlugin("Man10GachaV2").getDataFolder(), "gacha" + File.separator + name + ".yml");
@@ -48,7 +53,10 @@ public class GachaGame {
         itemIndex = getItemStackMap(config);
         payments = getPaymentList(config);
         gameInventory = createDefaultInventory(settings.title);
+        itemStacks = getItemStacks(config);
         Bukkit.getPluginManager().registerEvents(listener, this.plugin);
+        vault = new GachaVault();
+        itemBank = new GachaItemBank();
     }
 
     private Inventory createDefaultInventory(String title){
@@ -58,33 +66,180 @@ public class GachaGame {
         return inv.build();
     }
 
+    private List<GachaFinalItemStack> getItemStacks(FileConfiguration config){
+        String items = config.getString("storage");
+        List<GachaFinalItemStack> itemStacks = new ArrayList<>();
+        String[] split = items.split("\\|");
+        for(String s : split){
+            String[] split1 = s.split(",");
+            itemStacks.add(new GachaFinalItemStack(itemIndex.get(Integer.valueOf(split1[0])), Integer.valueOf(split1[1])));
+        }
+        return itemStacks;
+    }
+
     public void play(Player p){
         Inventory inv = gameInventory;
         inventoryMap.put(p.getUniqueId(), inv);
+        ArrayList<Integer> ints = new ArrayList<>();
+        for(int i = 0;i < 18;i++){
+            ints.add(0);
+        }
+        indexMap.put(p.getUniqueId(), ints);
         p.openInventory(inv);
         Runnable r = () -> {
-            int i = 0;
-            long spinSpeed = (long) (1000/settings.spinSpeed);
-            while (i < 10000){
-                roll(inventoryMap.get(p.getUniqueId()));
-                inventoryMap.get(p.getUniqueId()).setItem(17, itemIndex.get(new Random().nextInt(itemIndex.size())).item);
+            double spinSpeed = (1000/settings.spinSpeed);
+            while (true){
+                roll(p.getUniqueId());
+                settings.spinSound.playSoundToPlayer(p);
+                placeItem(p.getUniqueId());
                 try {
-                    Thread.sleep(spinSpeed);
+                    Thread.sleep((long) spinSpeed);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                i++;
+                spinSpeed = new GachaSpinAlgorithmManager(settings.spinAlgorithm, (long) settings.spinSpeed, 1000/spinSpeed).update();
+                if(spinSpeed >= 1900){
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
             }
+            win(itemIndex.get(indexMap.get(p.getUniqueId()).get(13)), p, inventoryMap.get(p.getUniqueId()).getItem(13).getAmount());
+            indexMap.remove(p.getUniqueId());
             inventoryMap.remove(p.getUniqueId());
             p.closeInventory();
         };
         Thread t = new Thread(r);
         t.start();
     }
+    private void win(GachaItemStack item, Player p, int amount){
+        if(item.playerSound != null){
+            item.playerSound.playSoundToPlayer(p);
+        }
+        if(item.broadcastSound != null){
+            item.broadcastSound.playSoundToServerExeptPlayer(p);
+        }
+        if(item.giveItem){
+            ItemStack payoutItem = item.item;
+            payoutItem.setAmount(amount);
+            p.getInventory().addItem(payoutItem);
+        }
+        if(item.commands != null){
+            for(String s : item.commands){
+                String displayName = item.item.getItemMeta().getDisplayName();
+                if(displayName == null){
+                    displayName = item.item.getType().name();
+                }
+                String command = s.replaceAll("%TITLE%", settings.title).replaceAll("&", "§").replaceAll("%PLAYER%", p.getDisplayName()).replaceAll("%UUID%", String.valueOf(p.getUniqueId()))
+                        .replaceAll("%ITEM%", displayName).replace("%AMOUNT%", String.valueOf(amount));
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+            }
+        }
+        if(item.broadcastMessage != null){
+            for(String s : item.broadcastMessage){
+                String displayName = item.item.getItemMeta().getDisplayName();
+                if(displayName == null){
+                    displayName = item.item.getType().name();
+                }
+                String command = s.replaceAll("%TITLE%", settings.title).replaceAll("&", "§").replaceAll("%PLAYER%", p.getDisplayName()).replaceAll("%UUID%", String.valueOf(p.getUniqueId()))
+                        .replaceAll("%ITEM%", displayName).replace("%AMOUNT%", String.valueOf(amount));
+                Bukkit.broadcastMessage(command);
+            }
+        }else{
+            String displayName = item.item.getItemMeta().getDisplayName();
+            if(displayName == null){
+                displayName = item.item.getType().name();
+            }
+            p.sendMessage("§e§lおめでとうございます『" + displayName + "』が当たりました");
+        }
+        if(item.playerMessage != null){
+            for(String s : item.playerMessage){
+                String displayName = item.item.getItemMeta().getDisplayName();
+                if(displayName == null){
+                    displayName = item.item.getType().name();
+                }
+                String command = s.replaceAll("%TITLE%", settings.title).replaceAll("&", "§").replaceAll("%PLAYER%", p.getDisplayName()).replaceAll("%UUID%", String.valueOf(p.getUniqueId()))
+                        .replaceAll("%ITEM%", displayName).replace("%AMOUNT%", String.valueOf(amount));
+                p.sendMessage(command);
+            }
+        }
+        if(item.playerTitleText != null){
+            item.playerTitleText.playTitleToPlayer(p);
+        }
+        if(item.broadcastTitleText != null){
+            item.broadcastTitleText.playTitleToPlayer(p);
+        }
+        if(item.items != null){
+            for(ItemStack items : item.items){
+                p.getInventory().addItem(items);
+            }
+        }
+        if(item.teleport != null){
+            item.teleport.teleportPlayerToLocation(p);
+        }
+        if(item.broadcastSound != null){
+            item.broadcastSound.playSoundToServerExeptPlayer(p);
+        }
+        if(item.playerSound != null){
+            item.playerSound.playSoundToPlayer(p);
+        }
+        if(item.playerPotionEffect != null){
+            for(GachaPotionEffect effect : item.playerPotionEffect){
+                effect.effectPlayer(p);
+            }
+        }
+        if(item.broadcastPotionEffect != null){
+            for(GachaPotionEffect effect : item.broadcastPotionEffect){
+                effect.effectServerExeptPlayer(p);
+            }
+        }
+        if(item.givePlayerMoney != 0){
+            vault.giveMoney(p.getUniqueId(), item.givePlayerMoney);
+        }
+        if(item.takePlayerMoney != 0){
+            vault.takeMoney(p.getUniqueId(), item.takePlayerMoney);
+        }
+        if(item.takeServerMoney != 0){
+            for(Player pp: Bukkit.getServer().getOnlinePlayers()){
+                vault.takeMoney(pp.getUniqueId(), item.takeServerMoney);
+            }
+        }
+        if(item.giveServerMoney != 0){
+            for(Player pp: Bukkit.getServer().getOnlinePlayers()){
+                vault.giveMoney(pp.getUniqueId(), item.giveServerMoney);
+            }
+        }
+        if(item.givePlayerItemBank != null){
+            for(GachaItemBankData data : item.givePlayerItemBank){
+                itemBank.giveItems(p.getUniqueId(), data.getId(), data.getAmount());
+            }
+        }
+        if(item.takePlayerItemBank != null){
+            for(GachaItemBankData data : item.takePlayerItemBank){
+                itemBank.takeItems(p.getUniqueId(), data.getId(), data.getAmount());
+            }
+        }
+        if(item.killPlayer){
+            p.setHealth(0D);
+        }
+    }
 
-    private void roll(Inventory inv){
+    private void placeItem(UUID uuid){
+        int rand = new Random().nextInt(itemStacks.size());
+        GachaFinalItemStack finalItemStack = itemStacks.get(rand);
+        ItemStack item = finalItemStack.getItemStack().item;
+        item.setAmount(finalItemStack.getAmount());
+        inventoryMap.get(uuid).setItem(17, item);
+        indexMap.get(uuid).set(17, rand);
+    }
+
+    private void roll(UUID uuid){
         for(int i = 9;i < 17;i++){
-            inv.setItem(i, inv.getItem(i + 1));
+            inventoryMap.get(uuid).setItem(i, inventoryMap.get(uuid).getItem(i + 1));
+            indexMap.get(uuid).set(i, indexMap.get(uuid).get(i + 1));
         }
     }
 
@@ -110,6 +265,7 @@ public class GachaGame {
                 }.runTaskLater(plugin, 5);
                 return;
             }
+            indexMap.remove(e.getPlayer().getUniqueId());
             inventoryMap.remove(e.getPlayer().getUniqueId());
         }
     }

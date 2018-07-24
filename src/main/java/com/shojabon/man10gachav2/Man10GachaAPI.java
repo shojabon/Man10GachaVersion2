@@ -7,17 +7,39 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by sho on 2018/06/23.
  */
 public class Man10GachaAPI {
-    Plugin plugin = Bukkit.getPluginManager().getPlugin("Man10GachaV2");
+    private Plugin plugin = Bukkit.getPluginManager().getPlugin("Man10GachaV2");
+    private static HashMap<String, GachaGame> gachaGameMap = new HashMap<>();
+
+    public GachaGame getGacha(String name){
+        if(!gachaGameMap.containsKey(name)){
+            if(!ifGachaExists(name)){
+                return null;
+            }
+            GachaGame game = new GachaGame(name, (JavaPlugin) plugin);
+            gachaGameMap.put(name, game);
+        }
+        return gachaGameMap.get(name);
+    }
+
+    public boolean ifGachaExists(String name){
+        if(gachaGameMap.containsKey(name)){
+            return true;
+        }
+        File file = new File(plugin.getDataFolder(), "gacha" + File.separator + name + ".yml");
+        return file.exists();
+    }
 
     public void createNewGacha(GachaSettings gachaSettings ,ArrayList<GachaPayment> payments, ArrayList<GachaFinalItemStack> itemStacks){
         File file = new File(plugin.getDataFolder(), "gacha" + File.separator + gachaSettings.name + ".yml");

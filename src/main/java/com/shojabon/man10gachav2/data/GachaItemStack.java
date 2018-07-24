@@ -113,7 +113,7 @@ public class GachaItemStack {
                 case "takeServerMoney":
                     takeServerMoney = Long.parseLong(String.valueOf(settings.get(key)));
                     break;
-                case "killPLayer":
+                case "killPlayer":
                     killPlayer = Boolean.getBoolean(String.valueOf(settings.get(key)));
                     break;
             }

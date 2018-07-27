@@ -24,15 +24,23 @@ public class GachaItemBank {
     }
 
     public void takeItems(UUID uuid, int id, long amount){
+        if(!useable())return;
         itemBankPayment.takePlayerItems(uuid, id, amount);
     }
 
     public void giveItems(UUID uuid, int id, long amount){
+        if(!useable())return;
         itemBankPayment.givePlayerItems(uuid, id, amount);
     }
 
     public boolean hasEnough(UUID uuid, int id, long amount){
+        if(!useable())return false;
         return itemBankPayment.playerHasEnoughItems(uuid, id, amount);
+    }
+
+    public String getName(int id){
+        if(!useable())return "";
+        return itemBankPayment.getNameFromId(id);
     }
 
 

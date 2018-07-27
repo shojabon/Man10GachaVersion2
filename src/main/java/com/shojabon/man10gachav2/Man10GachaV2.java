@@ -1,11 +1,9 @@
 package com.shojabon.man10gachav2;
 
 import com.shojabon.man10gachav2.apis.*;
-import com.shojabon.man10gachav2.data.GachaFinalItemStack;
-import com.shojabon.man10gachav2.data.GachaItemStack;
-import com.shojabon.man10gachav2.data.GachaPayment;
-import com.shojabon.man10gachav2.data.GachaPaymentData.GachaVaultPayment;
-import com.shojabon.man10gachav2.data.GachaSettings;
+import com.shojabon.man10gachav2.event.SignClickEvent;
+import com.shojabon.man10gachav2.event.SignDestroyEvent;
+import com.shojabon.man10gachav2.event.SignUpdateEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -16,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public final class Man10GachaV2 extends JavaPlugin {
@@ -23,7 +22,7 @@ public final class Man10GachaV2 extends JavaPlugin {
     FileConfiguration pluginConfig = null;
 
     GachaVault vault = null;
-    Man10GachaAPI api = null;
+    public Man10GachaAPI api = null;
 
     DatabaseConnector mysql = null;
     @Override
@@ -35,17 +34,23 @@ public final class Man10GachaV2 extends JavaPlugin {
         vault = new GachaVault();
         api = new Man10GachaAPI();
         databaseBootSequence();
+        api.createSignsFileIfNotExist();
+        api.loadSignFile();
+        Bukkit.getServer().getPluginManager().registerEvents(new SignUpdateEvent(this),this);
+        Bukkit.getServer().getPluginManager().registerEvents(new SignDestroyEvent(this),this);
+        Bukkit.getServer().getPluginManager().registerEvents(new SignClickEvent(this),this);
     }
+
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
     }
 
-    String prefix = "§6[§aMg§fac§dha§5V2§6]§f";
+    public String prefix = "§6[§aMg§fac§dha§5V2§6]§f";
 
     public void createLog(String message){
-        Bukkit.getLogger().info(prefix + message);
+        Bukkit.getLogger().info("[Mgachav2]" + message);
     }
 
     private void databaseBootSequence(){
@@ -72,7 +77,6 @@ public final class Man10GachaV2 extends JavaPlugin {
         }
         createLog("failed to connect to database");
         mysql = null;
-        return;
     }
 
     @Override

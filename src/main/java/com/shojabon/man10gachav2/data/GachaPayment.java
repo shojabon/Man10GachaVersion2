@@ -1,5 +1,6 @@
 package com.shojabon.man10gachav2.data;
 
+import com.shojabon.man10gachav2.apis.GachaItemBank;
 import com.shojabon.man10gachav2.apis.SItemStack;
 import com.shojabon.man10gachav2.data.GachaPaymentData.GachaItemBankPayment;
 import com.shojabon.man10gachav2.data.GachaPaymentData.GachaItemStackPayment;
@@ -28,10 +29,28 @@ public class GachaPayment {
         this.type = GachaPaymentType.ITEM_BANK;
         this.itemBankPayment = itemBankPayment;
     }
-    public GachaPayment(GachaVaultPayment vaultPayment){
+    public GachaPayment(GachaVaultPayment vaultPayment) {
         this.type = GachaPaymentType.VAULT;
         this.vaultPayment = vaultPayment;
     }
+
+    public GachaPaymentType getType(){
+        return type;
+    }
+
+    public GachaVaultPayment getVaultPayment(){
+        return vaultPayment;
+    }
+
+    public GachaItemStackPayment getItemStackPayment(){
+        return itemStackPayment;
+    }
+
+    public GachaItemBankPayment getItemBankPayment(){
+        return itemBankPayment;
+    }
+
+
 
     public Map<String, String> getStringData(){
         Map<String, String> out = new HashMap<>();

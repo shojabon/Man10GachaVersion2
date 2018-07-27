@@ -9,6 +9,7 @@ import com.shojabon.man10gachav2.data.*;
 import com.shojabon.man10gachav2.data.GachaPaymentData.GachaItemBankPayment;
 import com.shojabon.man10gachav2.data.GachaPaymentData.GachaItemStackPayment;
 import com.shojabon.man10gachav2.data.GachaPaymentData.GachaVaultPayment;
+import com.shojabon.man10gachav2.enums.GachaGameState;
 import com.shojabon.man10gachav2.enums.GachaPaymentType;
 import com.shojabon.man10gachav2.enums.GachaSpinAlgorithm;
 import org.bukkit.Bukkit;
@@ -39,12 +40,29 @@ public class GachaGame {
     private ArrayList<GachaItemStack> itemIndex;
     private Inventory gameInventory;
     private Listener listener = new Listener();
-    private List<GachaFinalItemStack> itemStacks;
+    private ArrayList<GachaFinalItemStack> itemStacks;
     private HashMap<UUID, Inventory> inventoryMap = new HashMap<>();
     private HashMap<UUID, ArrayList<Integer>> indexMap = new HashMap<>();
     private JavaPlugin plugin;
     private GachaVault vault;
     private GachaItemBank itemBank;
+
+    public ArrayList<GachaPayment> getGachaPayments(){
+        return payments;
+    }
+
+    public GachaSettings getSettings(){
+        return settings;
+    }
+
+    public ArrayList<GachaItemStack> getItemIndex(){
+        return itemIndex;
+    }
+
+    public ArrayList<GachaFinalItemStack> getItemStacks(){
+        return itemStacks;
+    }
+
     public GachaGame(String name, JavaPlugin plugin){
         this.plugin = plugin;
         File file = new File(Bukkit.getPluginManager().getPlugin("Man10GachaV2").getDataFolder(), "gacha" + File.separator + name + ".yml");
@@ -66,9 +84,9 @@ public class GachaGame {
         return inv.build();
     }
 
-    private List<GachaFinalItemStack> getItemStacks(FileConfiguration config){
+    private ArrayList<GachaFinalItemStack> getItemStacks(FileConfiguration config){
         String items = config.getString("storage");
-        List<GachaFinalItemStack> itemStacks = new ArrayList<>();
+        ArrayList<GachaFinalItemStack> itemStacks = new ArrayList<>();
         String[] split = items.split("\\|");
         for(String s : split){
             String[] split1 = s.split(",");
@@ -78,6 +96,8 @@ public class GachaGame {
     }
 
     public void play(Player p){
+        if(settings.locked)return;
+        if(Man10GachaAPI.playerGameStateMap.containsKey(p.getUniqueId())) return;
         Inventory inv = gameInventory;
         inventoryMap.put(p.getUniqueId(), inv);
         ArrayList<Integer> ints = new ArrayList<>();
@@ -85,6 +105,7 @@ public class GachaGame {
             ints.add(0);
         }
         indexMap.put(p.getUniqueId(), ints);
+        Man10GachaAPI.playerGameStateMap.put(p.getUniqueId(), new GachaGameStateData(p.getUniqueId(), GachaGameState.ROLLING, settings.name));
         p.openInventory(inv);
         Runnable r = () -> {
             double spinSpeed = (1000/settings.spinSpeed);
@@ -98,7 +119,8 @@ public class GachaGame {
                     e.printStackTrace();
                 }
                 spinSpeed = new GachaSpinAlgorithmManager(settings.spinAlgorithm, (long) settings.spinSpeed, 1000/spinSpeed).update();
-                if(spinSpeed >= 1900){
+                if(spinSpeed >= 1900 || spinSpeed <= 0){
+                    Man10GachaAPI.playerGameStateMap.put(p.getUniqueId(), new GachaGameStateData(p.getUniqueId(), GachaGameState.STOPPED, settings.name));
                     try {
                         Thread.sleep(3000);
                     } catch (InterruptedException e) {
@@ -109,6 +131,7 @@ public class GachaGame {
             }
             win(itemIndex.get(indexMap.get(p.getUniqueId()).get(13)), p, inventoryMap.get(p.getUniqueId()).getItem(13).getAmount());
             indexMap.remove(p.getUniqueId());
+            Man10GachaAPI.playerGameStateMap.remove(p.getUniqueId());
             inventoryMap.remove(p.getUniqueId());
             p.closeInventory();
         };
@@ -265,8 +288,6 @@ public class GachaGame {
                 }.runTaskLater(plugin, 5);
                 return;
             }
-            indexMap.remove(e.getPlayer().getUniqueId());
-            inventoryMap.remove(e.getPlayer().getUniqueId());
         }
     }
 
@@ -311,7 +332,8 @@ public class GachaGame {
             GachaPaymentType paymentType = GachaPaymentType.valueOf(config.getString("payments." + numKeys + ".type"));
             switch (paymentType){
                 case VAULT:
-                    payments.add(new GachaPayment(new GachaVaultPayment(config.getDouble("payments." + numKeys + ".value"))));
+                    double amount = Double.parseDouble(config.getString("payments." + numKeys + ".amount"));
+                    payments.add(new GachaPayment(new GachaVaultPayment(amount)));
                     break;
                 case ITEM:
                     payments.add(new GachaPayment(new GachaItemStackPayment(new SItemStack(config.getString("payments." + numKeys + ".item")).build(), config.getInt("amount"))));

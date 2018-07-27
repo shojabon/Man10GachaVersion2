@@ -1,5 +1,7 @@
 package com.shojabon.man10gachav2.GachaAlgorithm.Algorithms;
 
+import org.bukkit.Bukkit;
+
 public class Ramp {
     long speed;
     double speedNow;
@@ -9,10 +11,10 @@ public class Ramp {
     }
 
     public double updateTime(){
-        if(speed <= 50){
-            return 1000/(speedNow - 0.2f);
-        }else{
-            return 1000/(speedNow - 0.5f);
-        }
+        return 1000/(speedNow - sigmoid(speed));
+    }
+
+    private double sigmoid(double x){
+        return 0.4/(1 + Math.exp(-x + 20)) + 0.1;
     }
 }

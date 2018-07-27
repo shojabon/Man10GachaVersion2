@@ -81,6 +81,10 @@ public class GachaVault {
         return 0;
     }
 
+    public boolean hasEnough(UUID uuid, double value){
+        return getBalance(uuid) >= value;
+    }
+
 
 
 

@@ -23,6 +23,7 @@ public class GachaItemBankPayment {
         return this.amount;
     }
 
+
     public Map<String, String> getStringData(){
         Map<String, String> out = new HashMap<>();
         out.put("itemType", String.valueOf(id));

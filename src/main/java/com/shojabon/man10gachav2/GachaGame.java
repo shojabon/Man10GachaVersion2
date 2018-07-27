@@ -138,6 +138,7 @@ public class GachaGame {
         Thread t = new Thread(r);
         t.start();
     }
+
     private void win(GachaItemStack item, Player p, int amount){
         if(item.playerSound != null){
             item.playerSound.playSoundToPlayer(p);
@@ -266,7 +267,6 @@ public class GachaGame {
         }
     }
 
-
     private class Listener implements org.bukkit.event.Listener {
 
         @EventHandler
@@ -290,8 +290,6 @@ public class GachaGame {
             }
         }
     }
-
-
 
     private Map<String, Object> getSettingsMap(FileConfiguration config){
         Map<String, Object> map = new HashMap<>();

@@ -102,9 +102,6 @@ public class DatabaseConnector {
     }
 
     public boolean connectable(){
-        if(connection == null){
-            return false;
-        }
-        return true;
+        return connection != null;
     }
 }

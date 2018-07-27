@@ -4,6 +4,7 @@ import com.shojabon.man10gachav2.apis.*;
 import com.shojabon.man10gachav2.event.SignClickEvent;
 import com.shojabon.man10gachav2.event.SignDestroyEvent;
 import com.shojabon.man10gachav2.event.SignUpdateEvent;
+import com.shojabon.man10gachav2.menu.GachaSettingSelectionMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -92,8 +93,10 @@ public final class Man10GachaV2 extends JavaPlugin {
             //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.EMERALD)), 10));
             //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.TNT)), 10));
             //api.createNewGacha(new GachaSettings("test1"), payment, items);
-            GachaGame game = new GachaGame("test1", this);
-            game.play(((Player)sender));
+
+            //GachaGame game = new GachaGame("test1", this);
+            //game.play(((Player)sender));
+            new GachaSettingSelectionMenu(((Player)sender), this);
         }
         return false;
     }

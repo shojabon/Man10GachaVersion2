@@ -15,6 +15,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class SItemStack {
+
+    //created by Sho0
     private ItemStack item;
 
     public SItemStack(Material material){

@@ -27,13 +27,31 @@ import java.util.*;
  */
 public class Man10GachaAPI {
     private Plugin plugin = Bukkit.getPluginManager().getPlugin("Man10GachaV2");
-    private static HashMap<String, GachaGame> gachaGameMap = new HashMap<>();
+    public static HashMap<String, GachaGame> gachaGameMap = new HashMap<>();
     static HashMap<UUID, GachaGameStateData> playerGameStateMap = new HashMap<>();
     static HashMap<Location, GachaSignData> signDataMap = new HashMap<>();
     private GachaItemBank itembank;
     private GachaVault vault;
 
 
+    public List<String> getGachasInDirectory(){
+        List<String> name = new ArrayList<>();
+        File folder = new File(plugin.getDataFolder(), File.separator + "gacha");
+        File[] listOfFiles = folder.listFiles();
+        for (File listOfFile : listOfFiles) {
+            name.add(deleteExtention(listOfFile.getName()));
+        }
+        return name;
+    }
+
+    private String deleteExtention(String fileName){
+        String fname = fileName;
+        int pos = fname.lastIndexOf(".");
+        if (pos > 0) {
+            fname = fname.substring(0, pos);
+        }
+        return fname;
+    }
 
     public boolean ifGachaLocked(String name){
         return getGacha(name).getSettings().locked;

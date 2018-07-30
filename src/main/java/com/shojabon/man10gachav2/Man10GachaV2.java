@@ -4,19 +4,23 @@ import com.shojabon.man10gachav2.apis.*;
 import com.shojabon.man10gachav2.event.SignClickEvent;
 import com.shojabon.man10gachav2.event.SignDestroyEvent;
 import com.shojabon.man10gachav2.event.SignUpdateEvent;
-import com.shojabon.man10gachav2.menu.GachaSettingSelectionMenu;
+import com.shojabon.man10gachav2.menu.GachaSettingsSelectionMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiFunction;
 
 public final class Man10GachaV2 extends JavaPlugin {
 
@@ -40,6 +44,15 @@ public final class Man10GachaV2 extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(new SignUpdateEvent(this),this);
         Bukkit.getServer().getPluginManager().registerEvents(new SignDestroyEvent(this),this);
         Bukkit.getServer().getPluginManager().registerEvents(new SignClickEvent(this),this);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                List<String> names = api.getGachasInDirectory();
+                for(String name : names){
+                    api.getGacha(name);
+                }
+            }
+        }.runTaskLater(this, 2);
     }
 
 
@@ -96,7 +109,7 @@ public final class Man10GachaV2 extends JavaPlugin {
 
             //GachaGame game = new GachaGame("test1", this);
             //game.play(((Player)sender));
-            new GachaSettingSelectionMenu(((Player)sender), this);
+            new GachaSettingsSelectionMenu(((Player)sender));
         }
         return false;
     }

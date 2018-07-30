@@ -28,7 +28,7 @@ public class GachaItemStack {
 
     public GachaTeleport teleport = null;
     public GachaSound broadcastSound = null;
-    public GachaSound playerSound = null;
+    public GachaSound playerSound = new GachaSound(Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
     public ArrayList<GachaPotionEffect> playerPotionEffect = null;
     public ArrayList<GachaPotionEffect> broadcastPotionEffect = null;
 
@@ -205,7 +205,7 @@ public class GachaItemStack {
         if(broadcastSound != null){
             objects.put("broadcastSound", this.broadcastSound);
         }
-        if(playerSound != null){
+        if(playerSound != new GachaSound(Sound.ENTITY_PLAYER_LEVELUP, 1, 1)){
             objects.put("playerSound", this.playerSound);
         }
         if(playerPotionEffect != null){

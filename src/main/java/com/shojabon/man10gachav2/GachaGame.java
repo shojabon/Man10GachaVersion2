@@ -68,6 +68,7 @@ public class GachaGame {
         File file = new File(Bukkit.getPluginManager().getPlugin("Man10GachaV2").getDataFolder(), "gacha" + File.separator + name + ".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         settings = new GachaSettings(getSettingsMap(config));
+        settings.name = name;
         itemIndex = getItemStackMap(config);
         payments = getPaymentList(config);
         gameInventory = createDefaultInventory(settings.title);

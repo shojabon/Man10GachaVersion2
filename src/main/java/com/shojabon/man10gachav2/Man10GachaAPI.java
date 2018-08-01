@@ -5,6 +5,10 @@ import com.shojabon.man10gachav2.apis.GachaVault;
 import com.shojabon.man10gachav2.apis.SItemStack;
 import com.shojabon.man10gachav2.data.*;
 import com.shojabon.man10gachav2.enums.GachaPaymentType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -467,5 +471,40 @@ public class Man10GachaAPI {
         }
         return out;
     }
+
+    public static void sendHoverText(Player p, String text, String hoverText, String command){
+        HoverEvent hoverEvent = null;
+        if(hoverText != null){
+            BaseComponent[] hover = new ComponentBuilder(hoverText).create();
+            hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover);
+        }
+
+        ClickEvent clickEvent = null;
+        if(command != null){
+            clickEvent = new ClickEvent(ClickEvent.Action.RUN_COMMAND,command);
+        }
+
+        BaseComponent[] message = new ComponentBuilder(text).event(hoverEvent).event(clickEvent). create();
+        p.spigot().sendMessage(message);
+    }
+
+    public static void sendSuggestCommand(Player p,String text,String hoverText,String command){
+
+        HoverEvent hoverEvent = null;
+        if(hoverText != null){
+            BaseComponent[] hover = new ComponentBuilder(hoverText).create();
+            hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover);
+        }
+
+        ClickEvent clickEvent = null;
+        if(command != null){
+            clickEvent = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND ,command);
+        }
+
+        BaseComponent[] message = new ComponentBuilder(text). event(hoverEvent).event(clickEvent). create();
+        p.spigot().sendMessage(message);
+    }
+
+
 
 }

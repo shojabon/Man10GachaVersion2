@@ -3,6 +3,7 @@ package com.shojabon.man10gachav2.menu;
 import com.shojabon.man10gachav2.apis.SBannerItemStack;
 import com.shojabon.man10gachav2.apis.SInventory;
 import com.shojabon.man10gachav2.apis.SItemStack;
+import com.shojabon.man10gachav2.menu.GeneralSettings.GachaGeneralSettingsMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -11,13 +12,10 @@ import org.bukkit.block.banner.PatternType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.awt.*;
 
 public class GachaSettingsMenu {
     Inventory inv;

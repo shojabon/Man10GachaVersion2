@@ -4,25 +4,32 @@ import com.shojabon.man10gachav2.apis.*;
 import com.shojabon.man10gachav2.event.SignClickEvent;
 import com.shojabon.man10gachav2.event.SignDestroyEvent;
 import com.shojabon.man10gachav2.event.SignUpdateEvent;
-import com.shojabon.man10gachav2.menu.GachaSettingsSelectionMenu;
+import io.netty.channel.*;
+import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.CommandBlock;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 
-public final class Man10GachaV2 extends JavaPlugin {
+public final class Man10GachaV2 extends JavaPlugin implements Listener {
 
     FileConfiguration pluginConfig = null;
 
@@ -41,6 +48,7 @@ public final class Man10GachaV2 extends JavaPlugin {
         databaseBootSequence();
         api.createSignsFileIfNotExist();
         api.loadSignFile();
+        Bukkit.getServer().getPluginManager().registerEvents(this, this);
         Bukkit.getServer().getPluginManager().registerEvents(new SignUpdateEvent(this),this);
         Bukkit.getServer().getPluginManager().registerEvents(new SignDestroyEvent(this),this);
         Bukkit.getServer().getPluginManager().registerEvents(new SignClickEvent(this),this);
@@ -56,10 +64,6 @@ public final class Man10GachaV2 extends JavaPlugin {
     }
 
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-    }
 
     public String prefix = "§6[§aMg§fac§dha§5V2§6]§f";
 
@@ -96,6 +100,7 @@ public final class Man10GachaV2 extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(command.getName().equalsIgnoreCase("gacha")){
+            Player p = ((Player)sender);
             //ArrayList<GachaPayment> payment = new ArrayList<>();
             //payment.add(new GachaPayment(new GachaVaultPayment(1000)));
             //ArrayList<GachaFinalItemStack> items = new ArrayList<>();
@@ -106,11 +111,18 @@ public final class Man10GachaV2 extends JavaPlugin {
             //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.EMERALD)), 10));
             //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.TNT)), 10));
             //api.createNewGacha(new GachaSettings("test1"), payment, items);
-
             //GachaGame game = new GachaGame("test1", this);
             //game.play(((Player)sender));
-            new GachaSettingsSelectionMenu(((Player)sender));
+            IChatBaseComponent component = IChatBaseComponent.ChatSerializer.a("[\"\",{\"text\":\"1. \",\"bold\":true,\"color\":\"yellow\"},{\"text\":\"[X]\",\"bold\":true,\"color\":\"red\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"gacha settings test1 broadcastMessage delete 0\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"メッセージを消去する\"}},{\"text\":\"[U]\",\"bold\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"mgacha up\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストをに上げる\"}},{\"text\":\"[D]\",\"bold\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/gacha down\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストを下げる\"}},{\"text\":\"[E]\",\"bold\":true,\"color\":\"green\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストを編集する\"},\"insertion\":\"/mgacha edit\"},{\"text\":\"メッセージ\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"メッセージ全部\"}}]");
+            PacketPlayOutChat packet = new PacketPlayOutChat(component, ChatMessageType.CHAT);
+            ((CraftPlayer)((Player)sender)).getHandle().playerConnection.sendPacket(packet);
+            new BooleanSelectorAPI("test", p, new SItemStack(Material.DIAMOND_AXE).build(), false, (BiFunction<InventoryClickEvent, Boolean, String>) (event, aBoolean) -> {
+                Bukkit.broadcastMessage(String.valueOf(aBoolean));
+                return null;
+            });
         }
         return false;
     }
+
+
 }

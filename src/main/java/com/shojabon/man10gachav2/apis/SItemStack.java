@@ -12,6 +12,7 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SItemStack {
@@ -83,9 +84,10 @@ public class SItemStack {
     public SItemStack addLore(String lore){
         ItemMeta itemMeta = item.getItemMeta();
         List<String> lores = itemMeta.getLore();
+        if(lores == null) lores = new ArrayList<>();
         lores.add(lore);
         itemMeta.setLore(lores);
-        this.item.setItemMeta(itemMeta);
+        item.setItemMeta(itemMeta);
         return this;
     }
 
@@ -128,8 +130,15 @@ public class SItemStack {
     }
 
     public SItemStack setGlowingEffect(boolean enabled) {
-        this.addFlag(ItemFlag.HIDE_ENCHANTS);
-        this.addEnchantment(Enchantment.LURE, 1);
+        if(enabled){
+            this.addFlag(ItemFlag.HIDE_ENCHANTS);
+            this.addEnchantment(Enchantment.LURE, 1);
+        }else{
+            ItemMeta itemMeta = item.getItemMeta();
+            itemMeta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
+            itemMeta.removeEnchant(Enchantment.LURE);
+            item.setItemMeta(itemMeta);
+        }
         return this;
     }
     public SItemStack setUnBreakable(boolean enabled){

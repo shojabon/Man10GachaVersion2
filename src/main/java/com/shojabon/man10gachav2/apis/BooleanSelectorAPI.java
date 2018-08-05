@@ -2,8 +2,11 @@ package com.shojabon.man10gachav2.apis;
 
 import com.shojabon.man10gachav2.menu.FifthGenGUITemplate;
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -23,11 +26,13 @@ public class BooleanSelectorAPI {
     String title;
     ItemStack itemsToDisplay;
     boolean current;
+    BiFunction<InventoryClickEvent, Boolean, String> backFunction;
     BiFunction<InventoryClickEvent, Boolean, String> biFunction;
-    public BooleanSelectorAPI(String title, Player p, ItemStack itemToDisplay, boolean current, BiFunction<InventoryClickEvent, Boolean, String> biFunction){
+    public BooleanSelectorAPI(String title, Player p, ItemStack itemToDisplay, boolean current, BiFunction<InventoryClickEvent, Boolean, String> biFunction, BiFunction<InventoryClickEvent, Boolean, String> backFUnction){
         p.closeInventory();
         this.title = title;
         this.p = p;
+        this.backFunction = backFUnction;
         this.itemsToDisplay = itemToDisplay;
         this.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin("Man10GachaV2");
         Bukkit.getPluginManager().registerEvents(listener, plugin);
@@ -36,6 +41,7 @@ public class BooleanSelectorAPI {
         inv.fillInventory(new SItemStack(Material.STAINED_GLASS_PANE).setDamage( (short) 11).setDisplayname(" ").build());
         inv.setItem(31, new SItemStack(Material.STORAGE_MINECART).setDisplayname("§b§n§l変更を保存する").build());
         inv.setItem(13, itemsToDisplay);
+        inv.setItem(44, new SItemStack(new SBannerItemStack((short) 4).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_LEFT)).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_TOP)).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_MIDDLE)).pattern(new Pattern(DyeColor.BLUE, PatternType.STRIPE_TOP)).pattern(new Pattern(DyeColor.BLUE, PatternType.STRIPE_BOTTOM)).pattern(new Pattern(DyeColor.BLUE, PatternType.CURLY_BORDER)).build()).setDisplayname("§c§l§n戻る").build());
         this.inv = inv.build();
         render(current);
         p.openInventory(this.inv);
@@ -70,6 +76,10 @@ public class BooleanSelectorAPI {
             if(e.getWhoClicked().getUniqueId() != p.getUniqueId()) return;
             e.setCancelled(true);
             int s = e.getRawSlot();
+            if(s == 44){
+                backFunction.apply(e, current);
+                return;
+            }
             if(s == 31){
                 biFunction.apply(e, current);
                 return;

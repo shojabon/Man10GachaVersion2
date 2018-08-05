@@ -78,7 +78,10 @@ public class AnvilGUI {
 
         @EventHandler
         public void onInventoryClose(InventoryCloseEvent e) {
-            if(open && e.getInventory().equals(inv)) closeInventory();
+            if(open && e.getInventory().equals(inv)) {
+                closeInventory();
+                function.apply(null, null);
+            }
         }
 
     }

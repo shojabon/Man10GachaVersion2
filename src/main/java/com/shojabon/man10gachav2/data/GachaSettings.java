@@ -27,7 +27,6 @@ public class GachaSettings {
     public long startOn = 0;
     public long endOn = 0;
 
-
     public GachaSettings(String name){
         this.name = name;
     }
@@ -82,7 +81,6 @@ public class GachaSettings {
                          String title,
                          int startDelay,
                          GachaSound spinSound,
-                         int spinTime,
                          float spinSpeed,
                          GachaSpinAlgorithm spinAlgorithm,
                          boolean forceOpen,

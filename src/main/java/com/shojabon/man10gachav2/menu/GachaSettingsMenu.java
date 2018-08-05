@@ -1,9 +1,10 @@
 package com.shojabon.man10gachav2.menu;
 
-import com.shojabon.man10gachav2.apis.SBannerItemStack;
-import com.shojabon.man10gachav2.apis.SInventory;
-import com.shojabon.man10gachav2.apis.SItemStack;
-import com.shojabon.man10gachav2.menu.GeneralSettings.GachaGeneralSettingsMenu;
+import com.shojabon.man10gachav2.GachaGame;
+import com.shojabon.man10gachav2.Man10GachaAPI;
+import com.shojabon.man10gachav2.apis.*;
+import com.shojabon.man10gachav2.data.CategorizedMenuCategory;
+import com.shojabon.man10gachav2.menu.SettingsMenu.GachaGeneralSettingsMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -15,7 +16,12 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class GachaSettingsMenu {
     Inventory inv;
@@ -28,6 +34,7 @@ public class GachaSettingsMenu {
         this.gacha = gacha;
         this.p = p;
         this.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin("Man10GachaV2");
+        this.generalSettingsMenu = new GachaGeneralSettingsMenu(gacha, p);
         inv = new SInventory(5, "§b§l" + gacha + "：設定メニュー").fillInventory(new SItemStack(Material.STAINED_GLASS_PANE).setDamage(11).setDisplayname(" ").build()).
         setItem(new int[]{12, 13, 14, 21,23,30,31,32}, new SItemStack(Material.STAINED_GLASS_PANE).setDamage(14).setDisplayname(" ").build()).
         setItem(11, new SItemStack(Material.EMERALD).setDisplayname("§a§l§n価格設定").build()).
@@ -46,6 +53,8 @@ public class GachaSettingsMenu {
         p.closeInventory();
     }
 
+    GachaGeneralSettingsMenu generalSettingsMenu;
+
     class Listener implements org.bukkit.event.Listener
     {
         Player p;
@@ -58,7 +67,7 @@ public class GachaSettingsMenu {
             if(e.getWhoClicked().getUniqueId() != p.getUniqueId()) return;
             e.setCancelled(true);
             if(e.getRawSlot() == 44) new GachaSettingsSelectionMenu(p);
-            if(e.getRawSlot() == 29) new GachaGeneralSettingsMenu(gacha, p);
+            if(e.getRawSlot() == 29) generalSettingsMenu.createMenu();
         }
 
         @EventHandler
@@ -67,5 +76,7 @@ public class GachaSettingsMenu {
             close((Player) e.getPlayer());
         }
 
+
     }
+
 }

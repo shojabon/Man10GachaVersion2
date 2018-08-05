@@ -132,14 +132,30 @@ public class Man10GachaAPI {
 
     public GachaGame getGacha(String name){
         if(!gachaGameMap.containsKey(name)){
-            if(!ifGachaExists(name)){
-                return null;
-            }
             GachaGame game = new GachaGame(name, (JavaPlugin) plugin);
             gachaGameMap.put(name, game);
         }
         return gachaGameMap.get(name);
     }
+
+    public int renameGacha(String oldGacha, String newGacha){
+        File oldFile = new File(Bukkit.getPluginManager().getPlugin("Man10GachaV2").getDataFolder(), "gacha" + File.separator + oldGacha + ".yml");
+        if(!oldFile.exists()){
+            return -1;
+        }
+        File newFile = new File(Bukkit.getPluginManager().getPlugin("Man10GachaV2").getDataFolder(), "gacha" + File.separator + newGacha + ".yml");
+        if(newFile.exists()){
+            return -2;
+        }
+        boolean success = oldFile.renameTo(newFile);
+        if(!success){
+            return -3;
+        }
+        gachaGameMap.remove(oldGacha);
+        getGacha(newGacha);
+        return 0;
+    }
+
 
     public boolean ifGachaSign(Location l){
         return signDataMap.containsKey(l);
@@ -347,6 +363,28 @@ public class Man10GachaAPI {
         return map;
     }
 
+    public int printSettings(String gacha, GachaSettings settings){
+        File file = new File(plugin.getDataFolder(), "gacha" + File.separator + gacha + ".yml");
+        if(!file.exists()){
+            return -1;
+        }
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        config.set("settings", null);
+        printSettings(settings.getStringData(), config);
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            return -2;
+        }
+        return 0;
+    }
+
+    public void reloadGacha(String gacha){
+        gachaGameMap.remove(gacha);
+        getGacha(gacha);
+    }
+
+
     private void printPayment(ArrayList<GachaPayment> payments, FileConfiguration config){
         for(int i = 0;i < payments.size();i++){
             Map<String, String> data = payments.get(i).getStringData();
@@ -355,7 +393,6 @@ public class Man10GachaAPI {
             }
         }
     }
-
 
     private void printSettings(Map<String, Object> settings, FileConfiguration config){
         for(String key : settings.keySet()) {
@@ -472,38 +509,6 @@ public class Man10GachaAPI {
         return out;
     }
 
-    public static void sendHoverText(Player p, String text, String hoverText, String command){
-        HoverEvent hoverEvent = null;
-        if(hoverText != null){
-            BaseComponent[] hover = new ComponentBuilder(hoverText).create();
-            hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover);
-        }
-
-        ClickEvent clickEvent = null;
-        if(command != null){
-            clickEvent = new ClickEvent(ClickEvent.Action.RUN_COMMAND,command);
-        }
-
-        BaseComponent[] message = new ComponentBuilder(text).event(hoverEvent).event(clickEvent). create();
-        p.spigot().sendMessage(message);
-    }
-
-    public static void sendSuggestCommand(Player p,String text,String hoverText,String command){
-
-        HoverEvent hoverEvent = null;
-        if(hoverText != null){
-            BaseComponent[] hover = new ComponentBuilder(hoverText).create();
-            hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover);
-        }
-
-        ClickEvent clickEvent = null;
-        if(command != null){
-            clickEvent = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND ,command);
-        }
-
-        BaseComponent[] message = new ComponentBuilder(text). event(hoverEvent).event(clickEvent). create();
-        p.spigot().sendMessage(message);
-    }
 
 
 

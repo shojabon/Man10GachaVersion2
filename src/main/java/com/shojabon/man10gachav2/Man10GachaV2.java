@@ -1,9 +1,11 @@
 package com.shojabon.man10gachav2;
 
 import com.shojabon.man10gachav2.apis.*;
+import com.shojabon.man10gachav2.data.CategorizedMenuCategory;
 import com.shojabon.man10gachav2.event.SignClickEvent;
 import com.shojabon.man10gachav2.event.SignDestroyEvent;
 import com.shojabon.man10gachav2.event.SignUpdateEvent;
+import com.shojabon.man10gachav2.menu.GachaSettingsSelectionMenu;
 import io.netty.channel.*;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
@@ -20,6 +22,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -28,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public final class Man10GachaV2 extends JavaPlugin implements Listener {
 
@@ -113,13 +117,10 @@ public final class Man10GachaV2 extends JavaPlugin implements Listener {
             //api.createNewGacha(new GachaSettings("test1"), payment, items);
             //GachaGame game = new GachaGame("test1", this);
             //game.play(((Player)sender));
-            IChatBaseComponent component = IChatBaseComponent.ChatSerializer.a("[\"\",{\"text\":\"1. \",\"bold\":true,\"color\":\"yellow\"},{\"text\":\"[X]\",\"bold\":true,\"color\":\"red\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"gacha settings test1 broadcastMessage delete 0\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"メッセージを消去する\"}},{\"text\":\"[U]\",\"bold\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"mgacha up\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストをに上げる\"}},{\"text\":\"[D]\",\"bold\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/gacha down\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストを下げる\"}},{\"text\":\"[E]\",\"bold\":true,\"color\":\"green\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストを編集する\"},\"insertion\":\"/mgacha edit\"},{\"text\":\"メッセージ\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"メッセージ全部\"}}]");
-            PacketPlayOutChat packet = new PacketPlayOutChat(component, ChatMessageType.CHAT);
-            ((CraftPlayer)((Player)sender)).getHandle().playerConnection.sendPacket(packet);
-            new BooleanSelectorAPI("test", p, new SItemStack(Material.DIAMOND_AXE).build(), false, (BiFunction<InventoryClickEvent, Boolean, String>) (event, aBoolean) -> {
-                Bukkit.broadcastMessage(String.valueOf(aBoolean));
-                return null;
-            });
+            //IChatBaseComponent component = IChatBaseComponent.ChatSerializer.a("[\"\",{\"text\":\"1. \",\"bold\":true,\"color\":\"yellow\"},{\"text\":\"[X]\",\"bold\":true,\"color\":\"red\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"gacha settings test1 broadcastMessage delete 0\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"メッセージを消去する\"}},{\"text\":\"[U]\",\"bold\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"mgacha up\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストをに上げる\"}},{\"text\":\"[D]\",\"bold\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/gacha down\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストを下げる\"}},{\"text\":\"[E]\",\"bold\":true,\"color\":\"green\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストを編集する\"},\"insertion\":\"/mgacha edit\"},{\"text\":\"メッセージ\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"メッセージ全部\"}}]");
+            //PacketPlayOutChat packet = new PacketPlayOutChat(component, ChatMessageType.CHAT);
+            //((CraftPlayer)((Player)sender)).getHandle().playerConnection.sendPacket(packet);
+            new GachaSettingsSelectionMenu(p);
         }
         return false;
     }

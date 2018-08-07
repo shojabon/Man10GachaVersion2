@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class BooleanSelectorAPI {
     Inventory inv;
@@ -26,16 +27,15 @@ public class BooleanSelectorAPI {
     String title;
     ItemStack itemsToDisplay;
     boolean current;
-    BiFunction<InventoryClickEvent, Boolean, String> backFunction;
+    Function<InventoryClickEvent, String> backFunction;
     BiFunction<InventoryClickEvent, Boolean, String> biFunction;
-    public BooleanSelectorAPI(String title, Player p, ItemStack itemToDisplay, boolean current, BiFunction<InventoryClickEvent, Boolean, String> biFunction, BiFunction<InventoryClickEvent, Boolean, String> backFUnction){
+    public BooleanSelectorAPI(String title, Player p, ItemStack itemToDisplay, boolean current, BiFunction<InventoryClickEvent, Boolean, String> biFunction, Function<InventoryClickEvent, String> backFunction){
         p.closeInventory();
         this.title = title;
         this.p = p;
-        this.backFunction = backFUnction;
+        this.backFunction = backFunction;
         this.itemsToDisplay = itemToDisplay;
         this.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin("Man10GachaV2");
-        Bukkit.getPluginManager().registerEvents(listener, plugin);
         this.biFunction = biFunction;
         SInventory inv = new SInventory(5, title);
         inv.fillInventory(new SItemStack(Material.STAINED_GLASS_PANE).setDamage( (short) 11).setDisplayname(" ").build());
@@ -44,6 +44,7 @@ public class BooleanSelectorAPI {
         inv.setItem(44, new SItemStack(new SBannerItemStack((short) 4).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_LEFT)).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_TOP)).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_MIDDLE)).pattern(new Pattern(DyeColor.BLUE, PatternType.STRIPE_TOP)).pattern(new Pattern(DyeColor.BLUE, PatternType.STRIPE_BOTTOM)).pattern(new Pattern(DyeColor.BLUE, PatternType.CURLY_BORDER)).build()).setDisplayname("§c§l§n戻る").build());
         this.inv = inv.build();
         render(current);
+        Bukkit.getPluginManager().registerEvents(listener, plugin);
         p.openInventory(this.inv);
     }
 
@@ -77,7 +78,7 @@ public class BooleanSelectorAPI {
             e.setCancelled(true);
             int s = e.getRawSlot();
             if(s == 44){
-                backFunction.apply(e, current);
+                backFunction.apply(e);
                 return;
             }
             if(s == 31){
@@ -99,6 +100,7 @@ public class BooleanSelectorAPI {
         public void onClose(InventoryCloseEvent e){
             if(e.getPlayer().getUniqueId() != p.getUniqueId()) return;
             close((Player) e.getPlayer());
+            backFunction.apply(null);
         }
 
     }

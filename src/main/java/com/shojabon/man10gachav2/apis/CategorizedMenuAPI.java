@@ -5,6 +5,7 @@ import com.shojabon.man10gachav2.menu.GachaSettingsMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.entity.Player;
@@ -38,13 +39,15 @@ public class CategorizedMenuAPI {
     BiFunction<InventoryClickEvent, CategorizedMenuLocation, String> clickFunction;
     HashMap<Integer, Integer> categorySlotToCategoryId = new HashMap<>();
     HashMap<Integer, Integer> selectionSlotToSelectionId = new HashMap<>();
-    public CategorizedMenuAPI(String title, Player p, List<CategorizedMenuCategory> category, BiFunction<InventoryClickEvent, CategorizedMenuLocation, String> clickFunction, Function<InventoryClickEvent, String> clickBackFunction){
+    public CategorizedMenuAPI(String title, Player p, List<CategorizedMenuCategory> category, BiFunction<InventoryClickEvent, CategorizedMenuLocation, String> clickFunction, Function<InventoryClickEvent, String> clickBackFunction, int startCategory, int startPage){
         p.closeInventory();
         this.category = category;
         this.clickBackFunction = clickBackFunction;
         this.clickFunction = clickFunction;
         this.p = p;
         this.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin("Man10GachaV2");
+        currentCategory = startCategory;
+        currentSelectionPage = startPage;
         Bukkit.getPluginManager().registerEvents(listener, plugin);
         inv = new SInventory(6, title).setItem(53, new SItemStack(new SBannerItemStack((short) 4).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_LEFT)).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_TOP)).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_MIDDLE)).pattern(new Pattern(DyeColor.BLUE, PatternType.STRIPE_TOP)).pattern(new Pattern(DyeColor.BLUE, PatternType.STRIPE_BOTTOM)).pattern(new Pattern(DyeColor.BLUE, PatternType.CURLY_BORDER)).build()).setDisplayname("§c§l§n戻る").build()).
                 setItem(new int[]{9,10,11,12,13,14,15,16,17,45,46,47,48,49,50,51,52}, new SItemStack(Material.STAINED_GLASS_PANE).setDisplayname(" ").setDamage(11).build())
@@ -105,6 +108,7 @@ public class CategorizedMenuAPI {
         public void onClick(InventoryClickEvent e){
             if(e.getWhoClicked().getUniqueId() != p.getUniqueId()) return;
             e.setCancelled(true);
+            p.playSound(p.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 1, 1);
             if(e.getRawSlot() == 53) clickBackFunction.apply(e);
             int s = e.getRawSlot();
             if(s == 26 || s == 35 || s == 44){

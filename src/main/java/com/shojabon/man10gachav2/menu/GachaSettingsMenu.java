@@ -67,7 +67,7 @@ public class GachaSettingsMenu {
             if(e.getWhoClicked().getUniqueId() != p.getUniqueId()) return;
             e.setCancelled(true);
             if(e.getRawSlot() == 44) new GachaSettingsSelectionMenu(p);
-            if(e.getRawSlot() == 29) generalSettingsMenu.createMenu();
+            if(e.getRawSlot() == 29) generalSettingsMenu.createMenu(0,0);
         }
 
         @EventHandler

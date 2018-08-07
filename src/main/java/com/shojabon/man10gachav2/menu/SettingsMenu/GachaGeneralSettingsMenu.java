@@ -4,6 +4,7 @@ import com.shojabon.man10gachav2.GachaGame;
 import com.shojabon.man10gachav2.Man10GachaAPI;
 import com.shojabon.man10gachav2.apis.*;
 import com.shojabon.man10gachav2.data.CategorizedMenuCategory;
+import com.shojabon.man10gachav2.data.GachaSound;
 import com.shojabon.man10gachav2.enums.GachaSettingsIcon;
 import com.shojabon.man10gachav2.menu.GachaSettingsMenu;
 import org.bukkit.Bukkit;
@@ -39,13 +40,14 @@ public class GachaGeneralSettingsMenu {
         api = new Man10GachaAPI();
         game =  Man10GachaAPI.gachaGameMap.get(gacha);
     }
-    public void createMenu(){
+    public void createMenu(int startCategory, int startPage){
         p.closeInventory();
+        game = Man10GachaAPI.gachaGameMap.get(gacha);
         List<ItemStack> generalSettingsItem = new ArrayList<>();
         generalSettingsItem.add(new SItemStack(Material.NAME_TAG).setDisplayname("§c§l§nガチャの登録名設定").addLore("§b§l現在設定:" + gacha).build());
-        generalSettingsItem.add(new SItemStack(Material.ANVIL).setDisplayname("§c§l§nガチャのタイトル設定").addLore("§b§l現在設定:" + game.getSettings().title).build());
+        generalSettingsItem.add(new SItemStack(Material.ANVIL).setDisplayname("§c§l§nガチャのタイトル設定").addLore("§b§l現在設定:" + game.getSettings().title.replaceAll("&", "§")).build());
         generalSettingsItem.add(new SItemStack(Material.PAINTING).setDisplayname("§c§l§nアイコン設定").addLore("§b§l現在設定:" + game.getSettings().icon.getType().name()).build());
-        generalSettingsItem.add(new SItemStack(Material.DISPENSER).setDisplayname("§c§l§n回転スピード設定").addLore("§b§l現在設定:" + game.getSettings().spinSpeed).build());
+        generalSettingsItem.add(new SItemStack(Material.COMPASS).setDisplayname("§c§l§n回転スピード設定").addLore("§b§l現在設定:" + game.getSettings().spinSpeed).build());
         generalSettingsItem.add(new SItemStack(Material.DISPENSER).setDisplayname("§c§l§n回転アルゴリズム設定").addLore("§b§l現在設定:" + game.getSettings().spinAlgorithm.name()).build());
 
         List<ItemStack> soundSettings = new ArrayList<>();
@@ -55,7 +57,7 @@ public class GachaGeneralSettingsMenu {
         List<ItemStack> misc = new ArrayList<>();
         misc.add(new SItemStack(Material.WATCH).setDisplayname("§c§l§n開始ディレイ設定").addLore("§b§l現在設定:" + game.getSettings().startDelay).build());
         misc.add(new SItemStack(Material.IRON_DOOR).setDisplayname("§c§l§n強制メニューオープン設定").addLore("§b§l現在設定:" + game.getSettings().forceOpen).build());
-        misc.add(new SItemStack(Material.COMPASS).setDisplayname("§c§l§n確率表示設定").addLore("§b§l現在設定:" + game.getSettings().forceOpen).build());
+        //misc.add(new SItemStack(Material.COMPASS).setDisplayname("§c§l§n確率表示設定").addLore("§b§l現在設定:" + game.getSettings().showPercentage).build());
 
 
         List<CategorizedMenuCategory> categories = new ArrayList<>();
@@ -70,22 +72,37 @@ public class GachaGeneralSettingsMenu {
         }, event -> {
             new GachaSettingsMenu(gacha, p);
             return null;
-        });
+        }, startCategory, startPage);
+    }
+
+    private void pushSettings(){
+        api.printSettings(gacha, game.getSettings());
+        api.reloadGacha(gacha);
     }
 
     private void settings(int category, int id){
         switch (category){
-            case 0:
+            case 0: {
                 generalCategory(id);
+                return;
+            }
+            case 1:{
+                soundGategory(id);
+                return;
+            }
+            case 2:{
+                miscCategory(id);
+                return;
+            }
         }
     }
 
-    private void restartMenu(){
+    private void restartMenu(int startCategory, int startPage){
         new BukkitRunnable(){
 
             @Override
             public void run() {
-                createMenu();
+                createMenu(startCategory, startPage);
             }
         }.runTaskLater(plugin, 1);
     }
@@ -96,7 +113,7 @@ public class GachaGeneralSettingsMenu {
                 //登録名変更設定
                 new AnvilGUI(p, gacha, (event, s) -> {
                     if (event == null) {
-                        restartMenu();
+                        restartMenu(0,0);
                         return null;
                     }
                     if (s == null) {
@@ -105,7 +122,7 @@ public class GachaGeneralSettingsMenu {
                     }
                     if (gacha.equalsIgnoreCase(s)) {
                         p.sendMessage(prefix + "§c§l変更予定名が現在名と同じです");
-                        restartMenu();
+                        restartMenu(0, 0);
                         return null;
                     }
                     int n = api.renameGacha(gacha, s);
@@ -121,17 +138,27 @@ public class GachaGeneralSettingsMenu {
                     if (n == 0) {
                         gacha = s;
                     }
-                    restartMenu();
+                    restartMenu(0,0);
                     return null;
                 });
                 break;
             }
             case 1: {
                 //タイトル設定
+                new LongTextInputAPI(p, "§5§lガチャのタイトルを入力してください", (player, s) -> {
+                    game.getSettings().title = s;
+                    pushSettings();
+                    restartMenu(0,1);
+                    return null;
+                }, player -> {
+                    restartMenu(0,1);
+                    return null;
+                });
+                break;
             }
             case 2: {
                 //アイコン設定
-                new ItemStackSelectorAPI("§b§lのアイコンを選択してください", p, game.getSettings().icon, (BiFunction<InventoryClickEvent, ItemStack, String>) (event, itemStack) -> {
+                new ItemStackSelectorAPI("§b§lのアイコンを選択してください", p, game.getSettings().icon, (event, itemStack) -> {
                     if(itemStack == game.getSettings().icon){
                         p.sendMessage(prefix + "§c§l過去と同じアイコンは使用できません");
                         return "restart";
@@ -140,25 +167,104 @@ public class GachaGeneralSettingsMenu {
                     int i = api.printSettings(gacha, game.getSettings());
                     if(i == -1){
                         p.sendMessage(prefix + "§c§lガチャが存在しません");
-                        restartMenu();
+                        restartMenu(0,0);
                         return null;
                     }
                     if(i == -2){
                         p.sendMessage(prefix + "§c§l内部的エラーが発生しました");
-                        restartMenu();
+                        restartMenu(0,0);
                         return null;
                     }
                     if(i == 0){
                         api.reloadGacha(gacha);
-                        restartMenu();
+                        restartMenu(0,0);
                         return null;
                     }
                     return null;
                 }, event -> {
-                    restartMenu();
+                    restartMenu(0,0);
                     return null;
                 });
+                break;
+            }
+            case 3: {
+                //回転速度設定
+                new NumberInputAPI("§b§l回転速度を入力してください", p, 3, (event, integer) -> {
+                    if (integer == 0) {
+                        p.sendMessage(prefix + "§c§l回転速度は1以上を入力してください");
+                        return "restart";
+                    }
+                    if (integer > 200) {
+                        p.sendMessage(prefix + "§c§l回転速度は200以下を入力してください");
+                        return "restart";
+                    }
+                    game.getSettings().spinSpeed = integer;
+                    pushSettings();
+                    restartMenu(0,0);
+                    return null;
+                }, event -> {
+                    restartMenu(0,0);
+                    return null;
+                });
+            }
+        }
+    }
 
+    private void soundGategory(int id){
+        switch (id){
+            case 0:{
+                //回転音設定
+                GachaSound sound = game.getSettings().spinSound;
+                new SoundSelectorAPI("§b§l回転音を設定してください", p, sound.getVolume(), sound.getPitch(), sound.getSound(), (event, gachaSound) -> {
+                    game.getSettings().spinSound = gachaSound;
+                    pushSettings();
+                    restartMenu(1,0);
+                    return null;
+                }, event -> {
+                    restartMenu(1, 0);
+                    return null;
+                });
+            }
+        }
+    }
+
+    private void miscCategory(int id){
+        switch (id){
+            case 0:{
+                new NumberInputAPI("§b§l開始ディレイを入力してください(秒)", p, 3, (event, integer) -> {
+                    game.getSettings().startDelay = integer;
+                    pushSettings();
+                    restartMenu(2, 0);
+                    return null;
+                }, event -> {
+                    restartMenu(2,0);
+                    return null;
+                });
+                return;
+            }
+            case 1: {
+                new BooleanSelectorAPI("§b§l強制メニューオープン設定", p, new ItemStack(Material.IRON_DOOR), game.getSettings().forceOpen, (event, aBoolean) -> {
+                    game.getSettings().forceOpen = aBoolean;
+                    pushSettings();
+                    restartMenu(2, 0);
+                    return null;
+                }, event -> {
+                    restartMenu(2, 0);
+                    return null;
+                });
+                return;
+            }
+            case 2: {
+                new BooleanSelectorAPI("§b§l確率表示設定", p, new ItemStack(Material.IRON_DOOR), game.getSettings().showPercentage, (event, aBoolean) -> {
+                    game.getSettings().showPercentage = aBoolean;
+                    pushSettings();
+                    restartMenu(2, 0);
+                    return null;
+                }, event -> {
+                    restartMenu(2, 0);
+                    return null;
+                });
+                return;
             }
         }
     }

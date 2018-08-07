@@ -1,35 +1,21 @@
 package com.shojabon.man10gachav2;
 
 import com.shojabon.man10gachav2.apis.*;
-import com.shojabon.man10gachav2.data.CategorizedMenuCategory;
 import com.shojabon.man10gachav2.event.SignClickEvent;
 import com.shojabon.man10gachav2.event.SignDestroyEvent;
 import com.shojabon.man10gachav2.event.SignUpdateEvent;
 import com.shojabon.man10gachav2.menu.GachaSettingsSelectionMenu;
-import io.netty.channel.*;
-import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.CommandBlock;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 

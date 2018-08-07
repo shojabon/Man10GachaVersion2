@@ -2,6 +2,7 @@ package com.shojabon.man10gachav2.data;
 
 import com.shojabon.man10gachav2.apis.SItemStack;
 import com.shojabon.man10gachav2.enums.GachaSpinAlgorithm;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
@@ -62,7 +63,7 @@ public class GachaSettings {
                     this.spinSound = (GachaSound) settings.get(key);
                     break;
                 case "spinSpeed":
-                    this.spinSpeed = Integer.valueOf(String.valueOf(settings.get(key)));
+                    this.spinSpeed = Float.valueOf(String.valueOf(settings.get(key)));
                     break;
                 case "spinAlgorithm":
                     this.spinAlgorithm = (GachaSpinAlgorithm) settings.get(key);
@@ -130,10 +131,10 @@ public class GachaSettings {
         } else {
             map.put("sound", new GachaSound(Sound.BLOCK_DISPENSER_DISPENSE, 1, 1));
         }
-        if (spinSpeed < 0) {
-            map.put("spinSpeed", spinSpeed);
-        } else {
+        if (spinSpeed < 1) {
             map.put("spinSpeed", 1);
+        } else {
+            map.put("spinSpeed", spinSpeed);
         }
         if (spinAlgorithm != null) {
             map.put("spinAlgorithm", spinAlgorithm);

@@ -39,6 +39,18 @@ public class GachaSound {
         }
     }
 
+    public float getPitch() {
+        return pitch;
+    }
+
+    public float getVolume() {
+        return volume;
+    }
+
+    public Sound getSound() {
+        return sound;
+    }
+
     public Map<String, String> getStringData(){
         Map<String, String> out = new HashMap<>();
         out.put("sound", sound.toString());

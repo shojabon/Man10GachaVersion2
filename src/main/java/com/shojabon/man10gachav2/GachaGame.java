@@ -38,7 +38,6 @@ public class GachaGame {
     private GachaSettings settings;
     private ArrayList<GachaPayment> payments;
     private ArrayList<GachaItemStack> itemIndex;
-    private Inventory gameInventory;
     private Listener listener = new Listener();
     private ArrayList<GachaFinalItemStack> itemStacks;
     private HashMap<UUID, Inventory> inventoryMap = new HashMap<>();
@@ -71,7 +70,6 @@ public class GachaGame {
         settings.name = name;
         itemIndex = getItemStackMap(config);
         payments = getPaymentList(config);
-        gameInventory = createDefaultInventory(settings.title);
         itemStacks = getItemStacks(config);
         Bukkit.getPluginManager().registerEvents(listener, this.plugin);
         vault = new GachaVault();
@@ -79,7 +77,7 @@ public class GachaGame {
     }
 
     private Inventory createDefaultInventory(String title){
-        SInventory inv = new SInventory(3, title);
+        SInventory inv = new SInventory(3, title.replaceAll("&", "§"));
         inv.setItem(new int[]{0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26}, new SItemStack(Material.STAINED_GLASS_PANE).setDamage(7).setDisplayname("").build()).
         setItem(new int[]{4, 22}, new SItemStack(Material.STAINED_GLASS_PANE).setDamage(14).setDisplayname("").build());
         return inv.build();
@@ -91,7 +89,8 @@ public class GachaGame {
         String[] split = items.split("\\|");
         for(String s : split){
             String[] split1 = s.split(",");
-            itemStacks.add(new GachaFinalItemStack(itemIndex.get(Integer.valueOf(split1[0])), Integer.valueOf(split1[1])));
+            GachaFinalItemStack item = new GachaFinalItemStack(itemIndex.get(Integer.valueOf(split1[0])), Integer.valueOf(split1[1]));
+            itemStacks.add(item);
         }
         return itemStacks;
     }
@@ -99,8 +98,9 @@ public class GachaGame {
     public void play(Player p){
         if(settings.locked)return;
         if(Man10GachaAPI.playerGameStateMap.containsKey(p.getUniqueId())) return;
-        Inventory inv = gameInventory;
-        inventoryMap.put(p.getUniqueId(), inv);
+        if(inventoryMap.containsKey(p.getUniqueId())) return;
+        inventoryMap.put(p.getUniqueId(), createDefaultInventory(settings.title));
+        Inventory inv = inventoryMap.get(p.getUniqueId());
         ArrayList<Integer> ints = new ArrayList<>();
         for(int i = 0;i < 18;i++){
             ints.add(0);
@@ -109,6 +109,13 @@ public class GachaGame {
         Man10GachaAPI.playerGameStateMap.put(p.getUniqueId(), new GachaGameStateData(p.getUniqueId(), GachaGameState.ROLLING, settings.name));
         p.openInventory(inv);
         Runnable r = () -> {
+            if(settings.startDelay != 0){
+                try {
+                    Thread.sleep(settings.startDelay * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             double spinSpeed = (1000/settings.spinSpeed);
             while (true){
                 roll(p.getUniqueId());
@@ -130,7 +137,7 @@ public class GachaGame {
                     break;
                 }
             }
-            win(itemIndex.get(indexMap.get(p.getUniqueId()).get(13)), p, inventoryMap.get(p.getUniqueId()).getItem(13).getAmount());
+            win(itemStacks.get(indexMap.get(p.getUniqueId()).get(13)).getItemStack(), p, inventoryMap.get(p.getUniqueId()).getItem(13).getAmount());
             indexMap.remove(p.getUniqueId());
             Man10GachaAPI.playerGameStateMap.remove(p.getUniqueId());
             inventoryMap.remove(p.getUniqueId());
@@ -255,9 +262,9 @@ public class GachaGame {
     private void placeItem(UUID uuid){
         int rand = new Random().nextInt(itemStacks.size());
         GachaFinalItemStack finalItemStack = itemStacks.get(rand);
-        ItemStack item = finalItemStack.getItemStack().item;
+        ItemStack item = finalItemStack.getItemStack().item.clone();
         item.setAmount(finalItemStack.getAmount());
-        inventoryMap.get(uuid).setItem(17, item);
+        inventoryMap.get(uuid).setItem(17, new SItemStack(item).build());
         indexMap.get(uuid).set(17, rand);
     }
 
@@ -280,14 +287,16 @@ public class GachaGame {
 
         @EventHandler
         public void onClose(InventoryCloseEvent e){
+            if(!inventoryMap.containsKey(e.getPlayer().getUniqueId())) return;
             if(settings.forceOpen){
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        e.getPlayer().openInventory(inventoryMap.get(e.getPlayer().getUniqueId()));
+                        if(inventoryMap.containsKey(e.getPlayer().getUniqueId())){
+                            e.getPlayer().openInventory(inventoryMap.get(e.getPlayer().getUniqueId()));
+                        }
                     }
-                }.runTaskLater(plugin, 5);
-                return;
+                }.runTaskLater(plugin, 1);
             }
         }
     }

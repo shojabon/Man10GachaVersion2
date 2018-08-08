@@ -4,6 +4,8 @@ import com.shojabon.man10gachav2.GachaGame;
 import com.shojabon.man10gachav2.Man10GachaAPI;
 import com.shojabon.man10gachav2.apis.*;
 import com.shojabon.man10gachav2.data.CategorizedMenuCategory;
+import com.shojabon.man10gachav2.data.GachaSettings;
+import com.shojabon.man10gachav2.menu.SettingsMenu.GachaContainerSettingsMenu;
 import com.shojabon.man10gachav2.menu.SettingsMenu.GachaGeneralSettingsMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -22,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class GachaSettingsMenu {
     Inventory inv;
@@ -68,6 +71,12 @@ public class GachaSettingsMenu {
             e.setCancelled(true);
             if(e.getRawSlot() == 44) new GachaSettingsSelectionMenu(p);
             if(e.getRawSlot() == 29) generalSettingsMenu.createMenu(0,0);
+            if(e.getRawSlot() == 22) {
+                new GachaContainerSettingsMenu(p, "§b§l" + gacha + "のコンテナ設定", gacha, event -> {
+                    new GachaSettingsMenu(gacha, p);
+                    return null;
+                });
+            }
         }
 
         @EventHandler

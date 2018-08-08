@@ -1,6 +1,7 @@
 package com.shojabon.man10gachav2.data;
 
 import com.shojabon.man10gachav2.apis.SBannerItemStack;
+import com.shojabon.man10gachav2.apis.SItemStack;
 import org.bukkit.DyeColor;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
@@ -31,6 +32,8 @@ public class GachaBannerDictionary {
         symbol.put("plus",  new SBannerItemStack((short) 4).pattern(new Pattern(DyeColor.WHITE, PatternType.STRAIGHT_CROSS)).pattern(new Pattern(DyeColor.BLUE, PatternType.BORDER)).pattern(new Pattern(DyeColor.BLUE, PatternType.STRIPE_TOP)).pattern(new Pattern(DyeColor.BLUE, PatternType.STRIPE_BOTTOM)).build());
         symbol.put("minus",  new SBannerItemStack((short) 4).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_MIDDLE)).pattern(new Pattern(DyeColor.BLUE, PatternType.BORDER)).build());
         symbol.put("dot", new SBannerItemStack((short)4).pattern(new Pattern(DyeColor.WHITE, PatternType.CIRCLE_MIDDLE)).build());
+        symbol.put("back", new SItemStack(new SBannerItemStack((short) 4).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_LEFT)).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_TOP)).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_MIDDLE)).pattern(new Pattern(DyeColor.BLUE, PatternType.STRIPE_TOP)).pattern(new Pattern(DyeColor.BLUE, PatternType.STRIPE_BOTTOM)).pattern(new Pattern(DyeColor.BLUE, PatternType.CURLY_BORDER)).build()).setDisplayname("§c§l§n戻る").build());
+
     }
 
     public ItemStack getItem(int id){

@@ -40,6 +40,7 @@ public class GachaGame {
     private ArrayList<GachaItemStack> itemIndex;
     private Listener listener = new Listener();
     private ArrayList<GachaFinalItemStack> itemStacks;
+    private ArrayList<GachaFinalItemStack> storage = new ArrayList<>();
     private HashMap<UUID, Inventory> inventoryMap = new HashMap<>();
     private HashMap<UUID, ArrayList<Integer>> indexMap = new HashMap<>();
     private JavaPlugin plugin;
@@ -83,14 +84,20 @@ public class GachaGame {
         return inv.build();
     }
 
+
     private ArrayList<GachaFinalItemStack> getItemStacks(FileConfiguration config){
         String items = config.getString("storage");
         ArrayList<GachaFinalItemStack> itemStacks = new ArrayList<>();
         String[] split = items.split("\\|");
         for(String s : split){
             String[] split1 = s.split(",");
-            GachaFinalItemStack item = new GachaFinalItemStack(itemIndex.get(Integer.valueOf(split1[0])), Integer.valueOf(split1[1]));
-            itemStacks.add(item);
+            if(Integer.valueOf(split1[0]) == -1){
+                storage.add(new GachaFinalItemStack(null, 0));
+            }else{
+                GachaFinalItemStack item = new GachaFinalItemStack(itemIndex.get(Integer.valueOf(split1[0])), Integer.valueOf(split1[1]));
+                itemStacks.add(item);
+                storage.add(item);
+            }
         }
         return itemStacks;
     }
@@ -481,5 +488,9 @@ public class GachaGame {
             index.add(new GachaItemStack(map));
         }
         return index;
+    }
+
+    public ArrayList<GachaFinalItemStack> getStorage() {
+        return storage;
     }
 }

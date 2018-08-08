@@ -148,10 +148,10 @@ public class GachaGeneralSettingsMenu {
                 new LongTextInputAPI(p, "§5§lガチャのタイトルを入力してください", (player, s) -> {
                     game.getSettings().title = s;
                     pushSettings();
-                    restartMenu(0,1);
+                    restartMenu(0,0);
                     return null;
                 }, player -> {
-                    restartMenu(0,1);
+                    restartMenu(0,0);
                     return null;
                 });
                 break;

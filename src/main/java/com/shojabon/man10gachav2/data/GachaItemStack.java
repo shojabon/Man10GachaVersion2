@@ -1,12 +1,22 @@
 package com.shojabon.man10gachav2.data;
 
+import com.google.gson.Gson;
 import com.shojabon.man10gachav2.apis.SItemStack;
+import org.apache.commons.codec.binary.Base64OutputStream;
 import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
 import static org.bukkit.Effect.Type.SOUND;
 
@@ -118,6 +128,26 @@ public class GachaItemStack {
                     break;
             }
         }
+    }
+
+    public boolean isTheSame(GachaItemStack itemStack){
+        return serialize(this).equals(serialize(itemStack));
+    }
+
+    private static String serialize(Object object) {
+        ByteArrayOutputStream byteaOut = new ByteArrayOutputStream();
+        GZIPOutputStream gzipOut = null;
+        try {
+            try {
+                gzipOut = new GZIPOutputStream(new Base64OutputStream(byteaOut));
+                gzipOut.write(new Gson().toJson(object).getBytes("UTF-8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } finally {
+            if (gzipOut != null) try { gzipOut.close(); } catch (IOException logOrIgnore) {}
+        }
+        return new String(byteaOut.toByteArray());
     }
 
     public GachaItemStack(ItemStack item,

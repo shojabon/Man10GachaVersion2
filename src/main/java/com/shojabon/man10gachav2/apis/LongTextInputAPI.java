@@ -56,10 +56,16 @@ public class LongTextInputAPI {
             String c = e.getMessage().substring(1);
             if(e.getMessage().equalsIgnoreCase("/cancel")) {
                 cancelFunction.apply(e.getPlayer());
+                for(int i = 0;i < 10;i++){
+                    p.sendMessage("");
+                }
                 close();
             }else{
                 String res = okFunction.apply(e.getPlayer(), c);
                 if(res == null){
+                    for(int i = 0;i < 10;i++){
+                        p.sendMessage("");
+                    }
                     close();
                 }
             }

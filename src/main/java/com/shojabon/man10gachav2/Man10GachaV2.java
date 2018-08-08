@@ -1,23 +1,41 @@
 package com.shojabon.man10gachav2;
 
+import com.google.gson.Gson;
 import com.shojabon.man10gachav2.apis.*;
+import com.shojabon.man10gachav2.data.GachaFinalItemStack;
+import com.shojabon.man10gachav2.data.GachaItemStack;
+import com.shojabon.man10gachav2.data.GachaPayment;
+import com.shojabon.man10gachav2.data.GachaPaymentData.GachaVaultPayment;
+import com.shojabon.man10gachav2.data.GachaSettings;
 import com.shojabon.man10gachav2.event.SignClickEvent;
 import com.shojabon.man10gachav2.event.SignDestroyEvent;
 import com.shojabon.man10gachav2.event.SignUpdateEvent;
 import com.shojabon.man10gachav2.menu.GachaSettingsSelectionMenu;
+import org.apache.commons.codec.binary.Base64OutputStream;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.zip.GZIPOutputStream;
 
 public final class Man10GachaV2 extends JavaPlugin implements Listener {
 
@@ -50,7 +68,7 @@ public final class Man10GachaV2 extends JavaPlugin implements Listener {
                     api.getGacha(name);
                 }
             }
-        }.runTaskLater(this, 2);
+        }.runTaskLater(this, 0);
     }
 
 
@@ -91,9 +109,6 @@ public final class Man10GachaV2 extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(command.getName().equalsIgnoreCase("gacha")){
             Player p = ((Player)sender);
-            //ArrayList<GachaPayment> payment = new ArrayList<>();
-            //payment.add(new GachaPayment(new GachaVaultPayment(1000)));
-            //ArrayList<GachaFinalItemStack> items = new ArrayList<>();
             //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.POTATO)), 10));
             //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.DIAMOND)), 10));
             //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.GOLD_INGOT)), 10));
@@ -107,9 +122,20 @@ public final class Man10GachaV2 extends JavaPlugin implements Listener {
             //PacketPlayOutChat packet = new PacketPlayOutChat(component, ChatMessageType.CHAT);
             //((CraftPlayer)((Player)sender)).getHandle().playerConnection.sendPacket(packet);
             new GachaSettingsSelectionMenu(p);
+            //ArrayList<GachaPayment> payment = new ArrayList<>();
+            //payment.add(new GachaPayment(new GachaVaultPayment(1000)));
+            //ArrayList<GachaFinalItemStack> items = new ArrayList<>();
+            //Block b = p.getTargetBlock(null, 100);
+            //if(b.getType() == Material.CHEST){
+            //    Chest c = (Chest) b.getState();
+            //    Inventory inv  = c.getBlockInventory();
+            //    for(ItemStack item : inv){
+            //        items.add(new GachaFinalItemStack(new GachaItemStack(item), item.getAmount()));
+            //    }
+            //}
+            //api.createNewGacha(new GachaSettings("testGacha"), payment, items);
         }
         return false;
+
     }
-
-
 }

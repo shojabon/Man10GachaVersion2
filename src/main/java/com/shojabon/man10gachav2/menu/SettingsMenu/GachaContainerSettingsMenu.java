@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.function.Function;
 
@@ -34,6 +35,7 @@ public class GachaContainerSettingsMenu {
     GachaGame game;
 
     HashMap<Integer, GachaFinalItemStack> items = new HashMap<>();
+    HashMap<String, GachaItemStack> itemStackMap = new HashMap<>();
 
 
 
@@ -48,6 +50,20 @@ public class GachaContainerSettingsMenu {
         totalPages = items.size()/54;
         if(items.size()/54 - totalPages > 0) totalPages += 1;
         if(totalPages == 0) totalPages = 1;
+    }
+
+    private String encodeString(String string){
+        char[] cha = string.toCharArray();
+        StringBuilder res = new StringBuilder("§m§a§n§1§0");
+        for (char aCha : cha) {
+            res.append("§").append(aCha);
+        }
+        return res.toString();
+    }
+
+    private String decodeString(String string){
+        string = string.replace("§m§a§n§1§0", "");
+        return string.replaceAll("§", "");
     }
 
     public GachaContainerSettingsMenu(Player p, String title, String gacha, Function<InventoryClickEvent, String> cancelFunction){
@@ -78,6 +94,11 @@ public class GachaContainerSettingsMenu {
         i.setItem(78, new SItemStack(Material.PAPER).setDisplayname("§f§l新規ページ作成ツール").build());
 
         i.setItem(80, bannerDictionary.getSymbol("back"));
+
+        for(int ii = 0;ii < game.getItemIndex().size();ii++){
+            itemStackMap.put(game.getItemIndex().get(ii).getComparisonString(), game.getItemIndex().get(ii));
+        }
+
         inv = i.build();
         calculations();
         renderItems();
@@ -111,9 +132,11 @@ public class GachaContainerSettingsMenu {
         }
         for(int i = 0;i < size;i++){
             if(items.get(currentPage * 54 + i).doesExist()){
-                ItemStack item = items.get(currentPage * 54 + i).getItemStack().item.clone();
-                item.setAmount(items.get(currentPage * 54 + i).getAmount());
-                inv.setItem(i,item);
+                GachaFinalItemStack gItemStack = items.get(currentPage * 54 + i);
+                ItemStack item = gItemStack.getItemStack().item.clone();
+                item.setAmount(gItemStack.getAmount());
+                String str = gItemStack.getItemStack().getComparisonString();
+                inv.setItem(i, new SItemStack(item).setLore(Collections.singletonList(str)).build());
             }else{
                 inv.setItem(i, new ItemStack(Material.AIR));
             }

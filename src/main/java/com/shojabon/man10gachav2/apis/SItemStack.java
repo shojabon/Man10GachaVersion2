@@ -25,7 +25,7 @@ public class SItemStack {
     }
 
     public SItemStack(ItemStack item){
-        this.item = item;
+        this.item = item.clone();
     }
 
     public SItemStack(String data){

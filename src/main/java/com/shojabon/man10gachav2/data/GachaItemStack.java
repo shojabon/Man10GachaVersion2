@@ -3,12 +3,11 @@ package com.shojabon.man10gachav2.data;
 import com.google.gson.Gson;
 import com.shojabon.man10gachav2.apis.SItemStack;
 import org.apache.commons.codec.binary.Base64OutputStream;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,7 +22,7 @@ import static org.bukkit.Effect.Type.SOUND;
 /**
  * Created by sho on 2018/06/23.
  */
-public class GachaItemStack {
+public class GachaItemStack implements Serializable {
     public ItemStack item;
     public ArrayList<String> commands = null;
     public ArrayList<String> broadcastMessage = null;
@@ -145,10 +144,16 @@ public class GachaItemStack {
                 e.printStackTrace();
             }
         } finally {
-            if (gzipOut != null) try { gzipOut.close(); } catch (IOException logOrIgnore) {}
+            if (gzipOut != null) try { gzipOut.close(); } catch (IOException ignored) {}
         }
         return new String(byteaOut.toByteArray());
     }
+
+    public String getComparisonString(){
+        Map<String, Object> map = getStringData();
+        return serialize(map);
+    }
+
 
     public GachaItemStack(ItemStack item,
                           ArrayList<ItemStack> outputItems,
@@ -201,7 +206,7 @@ public class GachaItemStack {
 
     public Map<String, Object> getStringData(){
         Map<String, Object> objects = new HashMap<>();
-        objects.put("item", new SItemStack(this.item).toBase64());
+        objects.put("item", new SItemStack(this.item).setAmount(1).toBase64());
         if(commands != null){
             objects.put("command", this.commands);
         }

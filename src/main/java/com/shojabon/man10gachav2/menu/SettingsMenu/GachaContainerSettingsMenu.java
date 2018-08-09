@@ -80,7 +80,7 @@ public class GachaContainerSettingsMenu {
         i.setItem(new int[]{54,55}, new SItemStack(Material.STAINED_GLASS_PANE).setDamage(14).setDisplayname("§c§l§n次へ").build());
         i.setItem(new int[]{62,61}, new SItemStack(Material.STAINED_GLASS_PANE).setDamage(14).setDisplayname("§c§l§n前へ").build());
 
-
+        i.setItem(64, new SItemStack(Material.SIGN).setDisplayname("§6§lアイテム設定をする").build());
         i.setItem(65, new SItemStack(Material.BARRIER).setDisplayname("§c§l選択中のアイテムを解除する").build());
         i.setItem(66, new SItemStack(Material.SPECTRAL_ARROW).setDisplayname("§d§lスポイトツール").build());
         i.setItem(68, new SItemStack(Material.ARROW).setDisplayname("§f§lペンツール").build());
@@ -166,6 +166,7 @@ public class GachaContainerSettingsMenu {
             if(e.getWhoClicked().getUniqueId() != p.getUniqueId()) return;
             int r = e.getRawSlot();
             if(r >= 54 && r <= 80) e.setCancelled(true);
+            if(r == 80) cancelFunction.apply(e);
             if(r == 78){
                 totalPages += 1;
                 renderPageSelectionButton();

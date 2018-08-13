@@ -369,7 +369,7 @@ public class GachaGame {
             for(String key: config.getConfigurationSection("index." + numKey).getKeys(false)){
                 switch (key){
                     case "item":
-                        map.put(key, new SItemStack(config.getString("index." + numKey + "." + key)).build());
+                        map.put(key, new SItemStack(config.getString("index." + numKey + "." + key)).toBase64());
                         break;
                     case "commands":
                         map.put(key, config.getStringList("index." + numKey + "." + key));
@@ -402,10 +402,7 @@ public class GachaGame {
                         ));
                         break;
                     case "items":
-                        ArrayList<ItemStack> items = new ArrayList<>();
-                        for(String itemData : config.getStringList("index." + numKey + "." + key)){
-                            items.add(new SItemStack(itemData).build());
-                        }
+                        ArrayList<String> items = new ArrayList<>(config.getStringList("index." + numKey + "." + key));
                         map.put(key, items);
                         break;
                     case "pexGroup":

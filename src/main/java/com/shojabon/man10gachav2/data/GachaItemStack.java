@@ -6,6 +6,9 @@ import org.apache.commons.codec.binary.Base64OutputStream;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.json.simple.JSONObject;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -36,7 +39,7 @@ public class GachaItemStack implements Serializable {
     public ArrayList<String> pexPermission = null;
 
     public GachaTeleport teleport = null;
-    public GachaSound broadcastSound = null;
+    public GachaSound broadcastSound = new GachaSound();
     public GachaSound playerSound = new GachaSound(Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
     public ArrayList<GachaPotionEffect> playerPotionEffect = null;
     public ArrayList<GachaPotionEffect> broadcastPotionEffect = null;
@@ -56,11 +59,19 @@ public class GachaItemStack implements Serializable {
         this.item = item;
     }
 
+    public GachaItemStack(GachaItemStack itemStack){
+        loadMap(itemStack.getStringData());
+    }
+
     public GachaItemStack(Map<String, Object> settings){
+        loadMap(settings);
+    }
+
+    private void loadMap(Map<String, Object> settings){
         for(String key: settings.keySet()){
             switch(key){
                 case "item":
-                    item = ((ItemStack) settings.get(key));
+                    item = new SItemStack(String.valueOf(settings.get(key))).build();
                     break;
                 case "commands":
                     commands = ((ArrayList<String>) settings.get(key));
@@ -81,7 +92,11 @@ public class GachaItemStack implements Serializable {
                     broadcastTitleText = ((GachaTitleText) settings.get(key));
                     break;
                 case "items":
-                    items = ((ArrayList<ItemStack>) settings.get(key));
+                    ArrayList<String> list = ((ArrayList<String>) settings.get(key));
+                    items = new ArrayList<>();
+                    for(String st : list){
+                        items.add(new SItemStack(st).build());
+                    }
                     break;
                 case "pexGroup":
                     pexGroup = ((ArrayList<String>) settings.get(key));
@@ -226,7 +241,7 @@ public class GachaItemStack implements Serializable {
         Map<String, Object> objects = new HashMap<>();
         objects.put("item", new SItemStack(this.item).setAmount(1).toBase64());
         if(commands != null){
-            objects.put("command", this.commands);
+            objects.put("commands", this.commands);
         }
         if(broadcastMessage != null){
             objects.put("broadcastMessage", this.broadcastMessage);
@@ -244,7 +259,11 @@ public class GachaItemStack implements Serializable {
             objects.put("broadcastTitleText", this.broadcastTitleText);
         }
         if(items != null){
-            objects.put("items", this.items);
+            ArrayList<String> items = new ArrayList<>();
+            for(ItemStack item: this.items){
+                items.add(new SItemStack(item).toBase64());
+            }
+            objects.put("items", items);
         }
         if(pexGroup != null){
             objects.put("pexGroup", this.pexGroup);

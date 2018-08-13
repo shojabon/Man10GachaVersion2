@@ -21,6 +21,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -121,19 +122,9 @@ public final class Man10GachaV2 extends JavaPlugin implements Listener {
             //IChatBaseComponent component = IChatBaseComponent.ChatSerializer.a("[\"\",{\"text\":\"1. \",\"bold\":true,\"color\":\"yellow\"},{\"text\":\"[X]\",\"bold\":true,\"color\":\"red\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"gacha settings test1 broadcastMessage delete 0\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"メッセージを消去する\"}},{\"text\":\"[U]\",\"bold\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"mgacha up\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストをに上げる\"}},{\"text\":\"[D]\",\"bold\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/gacha down\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストを下げる\"}},{\"text\":\"[E]\",\"bold\":true,\"color\":\"green\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストを編集する\"},\"insertion\":\"/mgacha edit\"},{\"text\":\"メッセージ\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"メッセージ全部\"}}]");
             //PacketPlayOutChat packet = new PacketPlayOutChat(component, ChatMessageType.CHAT);
             //((CraftPlayer)((Player)sender)).getHandle().playerConnection.sendPacket(packet);
-            new GachaSettingsSelectionMenu(p);
             //ArrayList<GachaPayment> payment = new ArrayList<>();
-            //payment.add(new GachaPayment(new GachaVaultPayment(1000)));
-            //ArrayList<GachaFinalItemStack> items = new ArrayList<>();
-            //Block b = p.getTargetBlock(null, 100);
-            //if(b.getType() == Material.CHEST){
-            //    Chest c = (Chest) b.getState();
-            //    Inventory inv  = c.getBlockInventory();
-            //    for(ItemStack item : inv){
-            //        items.add(new GachaFinalItemStack(new GachaItemStack(item), item.getAmount()));
-            //    }
-            //}
-            //api.createNewGacha(new GachaSettings("testGacha"), payment, items);
+            new Thread(() -> new GachaSettingsSelectionMenu(p)).start();
+
         }
         return false;
 

@@ -21,6 +21,12 @@ public class GachaSound {
         this.pitch = pitch;
     }
 
+    public GachaSound(){
+        sound = null;
+        volume = 0;
+        pitch = 0;
+    }
+
     public void playSoundToPlayer(Player player){
         player.playSound(player.getLocation(), sound, volume, pitch);
     }
@@ -53,7 +59,11 @@ public class GachaSound {
 
     public Map<String, String> getStringData(){
         Map<String, String> out = new HashMap<>();
-        out.put("sound", sound.toString());
+        if(sound == null){
+            out.put("sound", "なし");
+        }else{
+            out.put("sound", sound.name());
+        }
         out.put("volume", String.valueOf(volume));
         out.put("pitch", String.valueOf(pitch));
         return out;

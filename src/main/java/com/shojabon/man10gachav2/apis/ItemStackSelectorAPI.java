@@ -53,7 +53,7 @@ public class ItemStackSelectorAPI {
             int r = e.getRawSlot();
             if(r >= 27){
                 if(p.getInventory().getItem(e.getSlot()) != null) {
-                    inv.setItem(13, new SItemStack(p.getInventory().getItem(e.getSlot()).clone()).setAmount(1).build());
+                    inv.setItem(13, new SItemStack(p.getInventory().getItem(e.getSlot()).clone()).build());
                 }
                 return;
             }

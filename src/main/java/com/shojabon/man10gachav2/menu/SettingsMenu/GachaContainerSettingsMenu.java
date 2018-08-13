@@ -7,6 +7,7 @@ import com.shojabon.man10gachav2.apis.SItemStack;
 import com.shojabon.man10gachav2.data.GachaBannerDictionary;
 import com.shojabon.man10gachav2.data.GachaFinalItemStack;
 import com.shojabon.man10gachav2.data.GachaItemStack;
+import com.shojabon.man10gachav2.enums.GachaStorageDrawtool;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,6 +18,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +39,8 @@ public class GachaContainerSettingsMenu {
     HashMap<Integer, GachaFinalItemStack> items = new HashMap<>();
     HashMap<String, GachaItemStack> itemStackMap = new HashMap<>();
 
-
+    GachaStorageDrawtool tool;
+    GachaContainerSettingsMenu menu;
 
     //page parameters
     int totalPages = 0;
@@ -52,7 +55,7 @@ public class GachaContainerSettingsMenu {
         if(totalPages == 0) totalPages = 1;
     }
 
-    private String encodeString(String string){
+    public String encodeString(String string){
         char[] cha = string.toCharArray();
         StringBuilder res = new StringBuilder("§m§a§n§1§0");
         for (char aCha : cha) {
@@ -61,17 +64,18 @@ public class GachaContainerSettingsMenu {
         return res.toString();
     }
 
-    private String decodeString(String string){
+    public String decodeString(String string){
         string = string.replace("§m§a§n§1§0", "");
         return string.replaceAll("§", "");
     }
 
-    public GachaContainerSettingsMenu(Player p, String title, String gacha, Function<InventoryClickEvent, String> cancelFunction){
+    public GachaContainerSettingsMenu(Player p, String title, String gacha, GachaStorageDrawtool currentTool, Function<InventoryClickEvent, String> cancelFunction){
         p.closeInventory();
         this.cancelFunction = cancelFunction;
         this.gacha = gacha;
         this.p = p;
         game = Man10GachaAPI.gachaGameMap.get(gacha);
+        this.tool = currentTool;
         this.title = title;
         this.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin("Man10GachaV2");
         Bukkit.getPluginManager().registerEvents(listener, plugin);
@@ -80,7 +84,7 @@ public class GachaContainerSettingsMenu {
         i.setItem(new int[]{54,55}, new SItemStack(Material.STAINED_GLASS_PANE).setDamage(14).setDisplayname("§c§l§n次へ").build());
         i.setItem(new int[]{62,61}, new SItemStack(Material.STAINED_GLASS_PANE).setDamage(14).setDisplayname("§c§l§n前へ").build());
 
-        i.setItem(64, new SItemStack(Material.SIGN).setDisplayname("§6§lアイテム設定をする").build());
+        i.setItem(64, new SItemStack(Material.SIGN).setDisplayname("§6§lアイテム設定モード").build());
         i.setItem(65, new SItemStack(Material.BARRIER).setDisplayname("§c§l選択中のアイテムを解除する").build());
         i.setItem(66, new SItemStack(Material.SPECTRAL_ARROW).setDisplayname("§d§lスポイトツール").build());
         i.setItem(68, new SItemStack(Material.ARROW).setDisplayname("§f§lペンツール").build());
@@ -104,10 +108,12 @@ public class GachaContainerSettingsMenu {
         renderItems();
         renderMenu();
         p.openInventory(inv);
+        this.menu = this;
     }
 
     private void renderMenu(){
         renderPageSelectionButton();
+        renderTools(tool);
     }
 
     private void renderPageSelectionButton(){
@@ -121,26 +127,71 @@ public class GachaContainerSettingsMenu {
     }
 
     private void renderItems(){
-        int size = items.size();
-        if(size - currentPage * 54>= 54) {
-            size = 54;
-        }else{
-            size = size - currentPage * 54;
-        }
-        for(int i = 0;i < 54;i++){
-            inv.setItem(i, new ItemStack(Material.AIR));
-        }
-        for(int i = 0;i < size;i++){
-            if(items.get(currentPage * 54 + i).doesExist()){
-                GachaFinalItemStack gItemStack = items.get(currentPage * 54 + i);
-                ItemStack item = gItemStack.getItemStack().item.clone();
-                item.setAmount(gItemStack.getAmount());
-                String str = gItemStack.getItemStack().getComparisonString();
-                inv.setItem(i, new SItemStack(item).setLore(Collections.singletonList(str)).build());
+        new Thread(()->{
+            int size = items.size();
+            if(size - currentPage * 54>= 54) {
+                size = 54;
             }else{
+                size = size - currentPage * 54;
+            }
+            for(int i = 0;i < 54;i++){
                 inv.setItem(i, new ItemStack(Material.AIR));
             }
-        }
+            for(int i = 0;i < size;i++) {
+                if (items.get(currentPage * 54 + i).doesExist()) {
+                    GachaFinalItemStack gItemStack = items.get(currentPage * 54 + i);
+                    ItemStack item = gItemStack.getItemStack().item.clone();
+                    item.setAmount(gItemStack.getAmount());
+                    String str = gItemStack.getItemStack().getComparisonString();
+                    if (item.getItemMeta() != null && item.getItemMeta().getLore() != null && item.getItemMeta().getLore().get(item.getItemMeta().getLore().size() - 1).contains("§m§a§n§1§0")) {
+                        inv.setItem(i, new SItemStack(item).build());
+                    } else {
+                        inv.setItem(i, new SItemStack(item).addLore(encodeString(str)).build());
+                    }
+                }else{
+                    inv.setItem(i, new ItemStack(Material.AIR));
+                }
+            }
+        }).start();
+    }
+    
+    private void renderTools(GachaStorageDrawtool tool){
+        new Thread(() ->{
+            this.tool = tool;
+            inv.setItem(64, new SItemStack(Material.SIGN).setDisplayname("§6§lアイテム設定モード").build());
+            inv.setItem(65, new SItemStack(Material.BARRIER).setDisplayname("§c§l選択中のアイテムを解除する").build());
+            inv.setItem(66, new SItemStack(Material.SPECTRAL_ARROW).setDisplayname("§d§lスポイトツール").build());
+            inv.setItem(68, new SItemStack(Material.ARROW).setDisplayname("§f§lペンツール").build());
+            inv.setItem(69, new SItemStack(Material.BUCKET).setDisplayname("§b§lバケツツール").build());
+
+            inv.setItem(58, new SItemStack(Material.MINECART).setDisplayname("§7§lページジャンプツール").build());
+            inv.setItem(74, new SItemStack(Material.TNT).setDisplayname("§c§lページ削除ツール").build());
+            inv.setItem(75, new SItemStack(Material.BOOK_AND_QUILL).setDisplayname("§8§lページコピーツール").build());
+            inv.setItem(76, new SItemStack(Material.BOOK).setDisplayname("§6§lページインフォツール").build());
+            inv.setItem(77, new SItemStack(Material.PAINTING).setDisplayname("§e§l同一アイテムページ作成ツール").build());
+            inv.setItem(78, new SItemStack(Material.PAPER).setDisplayname("§f§l新規ページ作成ツール").build());
+            switch (tool){
+                case BUCKET:{
+                    inv.setItem(69, new SItemStack(inv.getItem(69)).setGlowingEffect(true).build());
+                    break;
+                }
+                case BRUSH:{
+                    inv.setItem(68, new SItemStack(inv.getItem(68)).setGlowingEffect(true).build());
+                    break;
+                }
+                case SPOIT:{
+                    inv.setItem(66, new SItemStack(inv.getItem(66)).setGlowingEffect(true).build());
+                    break;
+                }
+                case EDIT:{
+                    inv.setItem(64, new SItemStack(inv.getItem(64)).setGlowingEffect(true).build());
+                    break;
+                }
+                case NONE:{
+                }
+                default:{break;}
+            }
+        }).start();
     }
 
     private void close(Player p){
@@ -151,11 +202,23 @@ public class GachaContainerSettingsMenu {
     private void pushPageToList(int page){
         for(int i = 0;i < 54;i++){
             if(inv.getItem(i) != null){
-                items.put(page * 54 + i, new GachaFinalItemStack(new GachaItemStack(inv.getItem(i)), inv.getItem(i).getAmount()));
+                items.put(page * 54 + i, new GachaFinalItemStack(new GachaItemStack(items.get(page * 54 + i).getItemStack()), inv.getItem(i).getAmount()));
             }else{
                 items.put(page * 54 + i, new GachaFinalItemStack(null, 0));
             }
         }
+    }
+
+    private void reopenMenu(){
+        new BukkitRunnable(){
+
+            @Override
+            public void run() {
+                p.closeInventory();
+                Bukkit.getPluginManager().registerEvents(listener, plugin);
+                p.openInventory(inv);
+            }
+        }.runTaskLater(plugin, 1);
     }
 
     class Listener implements org.bukkit.event.Listener
@@ -166,10 +229,55 @@ public class GachaContainerSettingsMenu {
             if(e.getWhoClicked().getUniqueId() != p.getUniqueId()) return;
             int r = e.getRawSlot();
             if(r >= 54 && r <= 80) e.setCancelled(true);
-            if(r == 80) cancelFunction.apply(e);
+            if(tool == GachaStorageDrawtool.EDIT){
+                if(r <= 53){
+                    e.setCancelled(true);
+                    if(inv.getItem(r) == null){
+                        return;
+                    }
+                    new GachaItemStackSettingsMenu(menu, inv.getItem(r).getAmount(), inv.getItem(r), event -> {
+                        p.closeInventory();
+                        Bukkit.getPluginManager().registerEvents(listener, plugin);
+                        renderItems();
+                        p.openInventory(inv);
+                        return null;
+                    }, (currentPage * 54 + r));
+                }
+            }
+            if(r == -999) return;
+            if(r >= 63 && r <= 71){
+                switch (r){
+                    case 64: {
+                        renderTools(GachaStorageDrawtool.EDIT);
+                        break;
+                    }
+                    case 65: {
+                        renderTools(GachaStorageDrawtool.NONE);
+                        break;
+                    }
+                    case 66: {
+                        renderTools(GachaStorageDrawtool.SPOIT);
+                        break;
+                    }
+                    case 68: {
+                        renderTools(GachaStorageDrawtool.BRUSH);
+                        break;
+                    }
+                    case 69: {
+                        renderTools(GachaStorageDrawtool.BUCKET);
+                        break;
+                    }
+                    default: break;
+                }
+            }
+            if(r == 80) {
+                cancelFunction.apply(e);
+                return;
+            }
             if(r == 78){
                 totalPages += 1;
                 renderPageSelectionButton();
+                return;
             }
             if(r == 61 || r == 62){
                 if(currentPage + 1 > totalPages){
@@ -179,6 +287,7 @@ public class GachaContainerSettingsMenu {
                 currentPage += 1;
                 renderItems();
                 renderPageSelectionButton();
+                return;
             }
             if(r == 54 || r == 55){
                 if(currentPage - 1 < 0){
@@ -188,6 +297,7 @@ public class GachaContainerSettingsMenu {
                 currentPage -= 1;
                 renderItems();
                 renderPageSelectionButton();
+                return;
             }
         }
 

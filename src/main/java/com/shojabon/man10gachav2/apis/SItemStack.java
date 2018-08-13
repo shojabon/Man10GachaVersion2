@@ -57,8 +57,8 @@ public class SItemStack {
             ItemStack[] items = new ItemStack[1];
             items[0] = item;
             dataOutput.writeInt(items.length);
-            for (int i = 0; i < items.length; i++) {
-                dataOutput.writeObject(items[i]);
+            for (ItemStack item1 : items) {
+                dataOutput.writeObject(item1);
             }
 
             dataOutput.close();

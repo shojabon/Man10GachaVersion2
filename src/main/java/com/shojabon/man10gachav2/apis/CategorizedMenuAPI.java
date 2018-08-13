@@ -18,6 +18,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -63,21 +64,27 @@ public class CategorizedMenuAPI {
     }
 
     private void renderCategory(){
-        for(int i = 0;i < 7;i++){
-            inv.setItem(i + 1, new ItemStack(Material.AIR));
-        }
-        int slots = 7;
-        if(category.size() <= slots){
-            slots = category.size();
-        }
-        for(int i = 0;i < slots;i++){
-            if(currentCategory == start + i){
-                inv.setItem(i + 1, new SItemStack(category.get(i + start).getIcon()).setGlowingEffect(true).build());
-            }else{
-                inv.setItem(i + 1, new SItemStack(category.get(i + start).getIcon()).setGlowingEffect(false).build());
+        new BukkitRunnable(){
+
+            @Override
+            public void run() {
+                for(int i = 0;i < 7;i++){
+                    inv.setItem(i + 1, new ItemStack(Material.AIR));
+                }
+                int slots = 7;
+                if(category.size() <= slots){
+                    slots = category.size();
+                }
+                for(int i = 0;i < slots;i++){
+                    if(currentCategory == start + i){
+                        inv.setItem(i + 1, new SItemStack(category.get(i + start).getIcon()).setGlowingEffect(true).build());
+                    }else{
+                        inv.setItem(i + 1, new SItemStack(category.get(i + start).getIcon()).setGlowingEffect(false).build());
+                    }
+                    categorySlotToCategoryId.put(i + 1, i + start);
+                }
             }
-                categorySlotToCategoryId.put(i + 1, i + start);
-        }
+        }.runTaskLater(plugin, 0);
     }
 
     private void renderFirstInventory(){
@@ -108,47 +115,49 @@ public class CategorizedMenuAPI {
         public void onClick(InventoryClickEvent e){
             if(e.getWhoClicked().getUniqueId() != p.getUniqueId()) return;
             e.setCancelled(true);
-            p.playSound(p.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 1, 1);
-            if(e.getRawSlot() == 53) clickBackFunction.apply(e);
-            int s = e.getRawSlot();
-            if(s == 26 || s == 35 || s == 44){
-                if(category.get(currentCategory).getContent().size() - (currentSelectionPage + 1)  * 21 >= 0){
-                    currentSelectionPage += 1;
-                    renderSelection();
+            new Thread(()->{
+                p.playSound(p.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 1, 1);
+                if(e.getRawSlot() == 53) clickBackFunction.apply(e);
+                int s = e.getRawSlot();
+                if(s == 26 || s == 35 || s == 44){
+                    if(category.get(currentCategory).getContent().size() - (currentSelectionPage + 1)  * 21 >= 0){
+                        currentSelectionPage += 1;
+                        renderSelection();
+                    }
+                    return;
                 }
-                return;
-            }
-            if(s == 18 || s == 27 || s == 36){
-                if(currentSelectionPage - 1 >= 0){
-                    currentSelectionPage -= 1;
-                    renderSelection();
+                if(s == 18 || s == 27 || s == 36){
+                    if(currentSelectionPage - 1 >= 0){
+                        currentSelectionPage -= 1;
+                        renderSelection();
+                    }
+                    return;
                 }
-                return;
-            }
-            if(e.getRawSlot() == 0){
-                if(start - 1 >= 0){
-                    start -= 1;
+                if(e.getRawSlot() == 0){
+                    if(start - 1 >= 0){
+                        start -= 1;
+                        renderCategory();
+                    }
+                }
+                if(e.getRawSlot() == 8){
+                    if(category.size() - 7 > start){
+                        start += 1;
+                        renderCategory();
+                    }
+                }
+                if(e.getRawSlot() <= 7 && e.getRawSlot() >= 1){
+                    currentCategory = categorySlotToCategoryId.get(e.getRawSlot());
+                    currentSelectionPage = 0;
                     renderCategory();
+                    renderSelection();
+                    return;
                 }
-            }
-            if(e.getRawSlot() == 8){
-                if(category.size() - 7 > start){
-                    start += 1;
-                    renderCategory();
+                if(e.getRawSlot() >= 19 && e.getRawSlot() <= 43) {
+                    if(e.getClickedInventory().getItem(e.getRawSlot()) != null){
+                        clickFunction.apply(e, new CategorizedMenuLocation(currentCategory, selectionSlotToSelectionId.get(e.getRawSlot())));
+                    }
                 }
-            }
-            if(e.getRawSlot() <= 7 && e.getRawSlot() >= 1){
-                currentCategory = categorySlotToCategoryId.get(e.getRawSlot());
-                currentSelectionPage = 0;
-                renderCategory();
-                renderSelection();
-                return;
-            }
-            if(e.getRawSlot() >= 19 && e.getRawSlot() <= 43) {
-                if(e.getClickedInventory().getItem(e.getRawSlot()) != null){
-                    clickFunction.apply(e, new CategorizedMenuLocation(currentCategory, selectionSlotToSelectionId.get(e.getRawSlot())));
-                }
-            }
+            }).start();
         }
 
         @EventHandler

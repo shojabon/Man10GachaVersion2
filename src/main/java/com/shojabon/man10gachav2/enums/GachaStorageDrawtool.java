@@ -4,4 +4,6 @@ public enum GachaStorageDrawtool {
     SPOIT,
     BRUSH,
     BUCKET,
+    EDIT,
+    NONE
 }

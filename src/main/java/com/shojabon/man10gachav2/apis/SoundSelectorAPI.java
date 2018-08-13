@@ -53,6 +53,7 @@ public class SoundSelectorAPI {
         inventory.fillInventory(new SItemStack(Material.STAINED_GLASS_PANE).setDisplayname(" ").setDamage(11).build());
         inventory.setItem(new int[]{15, 33}, dictionary.getSymbol("plus"));
         inventory.setItem(new int[]{16, 34}, dictionary.getSymbol("minus"));
+        inventory.setItem(18, new SItemStack(Material.BARRIER).setDisplayname("§c§l無音に設定する").build());
         inventory.setItem(new int[]{14,13,12,32,31,30}, new ItemStack(Material.AIR));
         inventory.setItem(19, new SItemStack(Material.ANVIL).setDisplayname("§a§l音を変更する").addLore("§b§l現在設定:" + sound.name()).build());
         inventory.setItem(10, new SItemStack(Material.NOTE_BLOCK).setDisplayname("§c§l試聴する").build());
@@ -128,18 +129,27 @@ public class SoundSelectorAPI {
                     renderVolume();
                 }
             }
+            if(r == 18){
+                volume = 0;
+                pitch = 0;
+                sound = null;
+                render();
+                return;
+            }
             if(r == 16){
                 if(volume >= 0){
                     volume -= 0.1;
                     if(volume < 0D) volume = 0.0f;
                     renderVolume();
                 }
+                return;
             }
             if(r == 33){
                 if(pitch <= 9.9){
                     pitch += 0.1;
                     renderPitch();
                 }
+                return;
             }
             if(r == 34){
                 if(pitch >= 0){
@@ -147,6 +157,7 @@ public class SoundSelectorAPI {
                     if(pitch < 0D) pitch = 0.0f;
                     renderPitch();
                 }
+                return;
             }
             if(r == 44) {
                 cancelFunction.apply(e);
@@ -161,6 +172,7 @@ public class SoundSelectorAPI {
             }
             if(r == 10) new GachaSound(sound, volume, pitch).playSoundToPlayer(p);
             if(r == 19){
+                p.closeInventory();
                 new AnvilGUI(p, sound.name(), (event, s) -> {
                     if(event == null){
                         reopen();
@@ -185,6 +197,7 @@ public class SoundSelectorAPI {
         public void onClose(InventoryCloseEvent e){
             if(e.getPlayer().getUniqueId() != p.getUniqueId()) return;
             close((Player) e.getPlayer());
+            cancelFunction.apply(null);
         }
 
     }

@@ -5,6 +5,7 @@ import com.shojabon.man10gachav2.Man10GachaAPI;
 import com.shojabon.man10gachav2.apis.*;
 import com.shojabon.man10gachav2.data.CategorizedMenuCategory;
 import com.shojabon.man10gachav2.data.GachaSettings;
+import com.shojabon.man10gachav2.enums.GachaStorageDrawtool;
 import com.shojabon.man10gachav2.menu.SettingsMenu.GachaContainerSettingsMenu;
 import com.shojabon.man10gachav2.menu.SettingsMenu.GachaGeneralSettingsMenu;
 import org.bukkit.Bukkit;
@@ -69,14 +70,16 @@ public class GachaSettingsMenu {
         public void onClick(InventoryClickEvent e){
             if(e.getWhoClicked().getUniqueId() != p.getUniqueId()) return;
             e.setCancelled(true);
-            if(e.getRawSlot() == 44) new GachaSettingsSelectionMenu(p);
-            if(e.getRawSlot() == 29) generalSettingsMenu.createMenu(0,0);
-            if(e.getRawSlot() == 22) {
-                new GachaContainerSettingsMenu(p, "§b§l" + gacha + "のコンテナ設定", gacha, event -> {
-                    new GachaSettingsMenu(gacha, p);
-                    return null;
-                });
-            }
+            new Thread(() -> {
+                if(e.getRawSlot() == 44) new GachaSettingsSelectionMenu(p);
+                if(e.getRawSlot() == 29) generalSettingsMenu.createMenu(0,0);
+                if(e.getRawSlot() == 22) {
+                    new GachaContainerSettingsMenu(p, "§b§l" + gacha + "のコンテナ設定", gacha, GachaStorageDrawtool.NONE, event -> {
+                        new GachaSettingsMenu(gacha, p);
+                        return null;
+                    });
+                }
+            }).start();
         }
 
         @EventHandler

@@ -15,6 +15,7 @@ public class GachaTitleText {
     int fadeIntTime;
     int time;
     int fadeoutTime;
+    boolean nul = false;
 
     public GachaTitleText(String mainText,String subText, int fadeIntTime, int time, int fadeoutTime){
         this.mainText = mainText;
@@ -24,6 +25,13 @@ public class GachaTitleText {
         this.fadeoutTime = fadeoutTime;
     }
 
+    public GachaTitleText(){
+        nul = true;
+    }
+
+    public boolean usable(){
+        return !nul;
+    }
     public void playTitleToPlayer(Player p){
         p.sendTitle(mainText, subText,fadeIntTime,time,fadeoutTime);
     }
@@ -39,6 +47,52 @@ public class GachaTitleText {
                 p.sendTitle(mainText, subText, fadeIntTime,time,fadeoutTime);
             }
         }
+    }
+
+    public int getFadeinTime() {
+        return fadeIntTime;
+    }
+
+    public int getFadeoutTime() {
+        return fadeoutTime;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public String getMainText() {
+        if(!usable())return "なし";
+        return mainText;
+    }
+
+    public String getSubText() {
+        if(!usable()) return  "なし";
+        return subText;
+    }
+
+    public void setFadeinTime(int fadeIntTime) {
+        nul = false;
+        this.fadeIntTime = fadeIntTime;
+    }
+
+    public void setFadeoutTime(int fadeoutTime) {
+        nul = false;
+        this.fadeoutTime = fadeoutTime;
+    }
+
+    public void setMainText(String mainText) {
+        nul = false;
+        this.mainText = mainText;
+    }
+
+    public void setSubText(String subText) {
+        nul = false;
+        this.subText = subText;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
     }
 
     public Map<String, String> getStringData(){

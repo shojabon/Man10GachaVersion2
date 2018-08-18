@@ -27,6 +27,10 @@ public class GachaSound {
         pitch = 0;
     }
 
+    public boolean usable(){
+        return sound != null;
+    }
+
     public void playSoundToPlayer(Player player){
         player.playSound(player.getLocation(), sound, volume, pitch);
     }

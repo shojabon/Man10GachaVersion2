@@ -36,6 +36,7 @@ public class SoundSelectorAPI {
     String title;
     BiFunction<InventoryClickEvent, GachaSound, String> okFunction;
     Function<InventoryClickEvent, String> cancelFunction;
+    boolean trans = false;
 
     public SoundSelectorAPI(String title, Player p, float volume, float pitch, Sound sound, BiFunction<InventoryClickEvent, GachaSound, String> okFunction, Function<InventoryClickEvent, String> cancelFunction){
         p.closeInventory();
@@ -55,7 +56,9 @@ public class SoundSelectorAPI {
         inventory.setItem(new int[]{16, 34}, dictionary.getSymbol("minus"));
         inventory.setItem(18, new SItemStack(Material.BARRIER).setDisplayname("§c§l無音に設定する").build());
         inventory.setItem(new int[]{14,13,12,32,31,30}, new ItemStack(Material.AIR));
-        inventory.setItem(19, new SItemStack(Material.ANVIL).setDisplayname("§a§l音を変更する").addLore("§b§l現在設定:" + sound.name()).build());
+        String name = "なし";
+        if(sound != null) name = sound.name();
+        inventory.setItem(19, new SItemStack(Material.ANVIL).setDisplayname("§a§l音を変更する").addLore("§b§l現在設定:" + name).build());
         inventory.setItem(10, new SItemStack(Material.NOTE_BLOCK).setDisplayname("§c§l試聴する").build());
         inventory.setItem(28, new SItemStack(Material.STAINED_GLASS_PANE).setDamage(5).setDisplayname("§a§l決定する").build());
         inventory.setItem(44, new SItemStack(new SBannerItemStack((short) 4).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_LEFT)).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_TOP)).pattern(new Pattern(DyeColor.WHITE, PatternType.STRIPE_MIDDLE)).pattern(new Pattern(DyeColor.BLUE, PatternType.STRIPE_TOP)).pattern(new Pattern(DyeColor.BLUE, PatternType.STRIPE_BOTTOM)).pattern(new Pattern(DyeColor.BLUE, PatternType.CURLY_BORDER)).build()).setDisplayname("§c§l§n戻る").build());
@@ -107,6 +110,7 @@ public class SoundSelectorAPI {
     }
 
     private void reopen(){
+        trans = false;
         new BukkitRunnable(){
             @Override
             public void run() {
@@ -133,6 +137,7 @@ public class SoundSelectorAPI {
                 volume = 0;
                 pitch = 0;
                 sound = null;
+                inv.setItem(19, new SItemStack(Material.ANVIL).setDisplayname("§a§l音を変更する").addLore("§b§l現在設定:なし").build());
                 render();
                 return;
             }
@@ -172,8 +177,11 @@ public class SoundSelectorAPI {
             }
             if(r == 10) new GachaSound(sound, volume, pitch).playSoundToPlayer(p);
             if(r == 19){
+                trans = true;
                 p.closeInventory();
-                new AnvilGUI(p, sound.name(), (event, s) -> {
+                String name = "None";
+                if(sound != null) name = sound.name();
+                new AnvilGUI(p, name, (event, s) -> {
                     if(event == null){
                         reopen();
                         return null;
@@ -197,7 +205,9 @@ public class SoundSelectorAPI {
         public void onClose(InventoryCloseEvent e){
             if(e.getPlayer().getUniqueId() != p.getUniqueId()) return;
             close((Player) e.getPlayer());
-            cancelFunction.apply(null);
+            if(!trans){
+                cancelFunction.apply(null);
+            }
         }
 
     }

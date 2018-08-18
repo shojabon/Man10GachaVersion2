@@ -3,10 +3,7 @@ package com.shojabon.man10gachav2.menu.SettingsMenu;
 
 import com.shojabon.man10gachav2.GachaGame;
 import com.shojabon.man10gachav2.apis.*;
-import com.shojabon.man10gachav2.data.CategorizedMenuCategory;
-import com.shojabon.man10gachav2.data.GachaFinalItemStack;
-import com.shojabon.man10gachav2.data.GachaItemStack;
-import com.shojabon.man10gachav2.data.GachaSound;
+import com.shojabon.man10gachav2.data.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -109,7 +106,7 @@ public class GachaItemStackSettingsMenu {
 
         List<ItemStack> vaultSettings = new ArrayList<>();
         vaultSettings.add(new SItemStack(Material.SKULL_ITEM).setDamage(3).setDisplayname("§a§l§nプレイヤーバランス払い出し設定").addLore("§b§l現在設定：" + gItemStack.givePlayerMoney).build());
-        vaultSettings.add(new SItemStack(Material.SKULL_ITEM).setDamage(3).setDisplayname("§c§l§nプレイヤーバランス払い入れ設定").addLore("§b§l現在設定：" + gItemStack.takePlayerItemBank).build());
+        vaultSettings.add(new SItemStack(Material.SKULL_ITEM).setDamage(3).setDisplayname("§c§l§nプレイヤーバランス払い入れ設定").addLore("§b§l現在設定：" + gItemStack.takePlayerMoney).build());
         vaultSettings.add(new SItemStack(Material.FLOWER_POT_ITEM).setDisplayname("§a§l§nサーバー払い出し設定").addLore("§b§l現在設定：" + gItemStack.giveServerMoney).build());
         vaultSettings.add(new SItemStack(Material.FLOWER_POT_ITEM).setDisplayname("§c§l§nサーバー払い入れ設定").addLore("§b§l現在設定：" + gItemStack.takeServerMoney).build());
 
@@ -172,6 +169,17 @@ public class GachaItemStackSettingsMenu {
             case 3:{
                 permissionSettings(slot);
                 break;
+            }
+            case 4:{
+                vaultSettings(slot);
+                break;
+            }
+            case 5:{
+                //itembank
+                break;
+            }
+            case 6:{
+                miscSettings(slot);
             }
         }
     }
@@ -352,6 +360,97 @@ public class GachaItemStackSettingsMenu {
                     reopenMenu(4,0);
                     return null;
                 });
+                break;
+            }
+            case 1:{
+                //プレイヤー払い入れ
+                new NumberInputAPI("§b§lプレイヤー払い入れ額を入力してください", menu.p, 9,(event, integer) -> {
+                    gItemStack.takePlayerMoney = integer;
+                    pushSettings();
+                    reopenMenu(4,0);
+                    return null;
+                }, event -> {
+                    reopenMenu(4,0);
+                    return null;
+                });
+                break;
+            }
+            case 2:{
+                //サーバー払い出し
+                new NumberInputAPI("§b§lサーバー支払額を入力してください", menu.p, 9,(event, integer) -> {
+                    gItemStack.giveServerMoney = integer;
+                    pushSettings();
+                    reopenMenu(4,0);
+                    return null;
+                }, event -> {
+                    reopenMenu(4,0);
+                    return null;
+                });
+                break;
+            }
+            case 3:{
+                //サーバー払い入れ
+                new NumberInputAPI("§b§lサーバー払い入れ額を入力してください", menu.p, 9,(event, integer) -> {
+                    gItemStack.takeServerMoney = integer;
+                    pushSettings();
+                    reopenMenu(4,0);
+                    return null;
+                }, event -> {
+                    reopenMenu(4,0);
+                    return null;
+                });
+                break;
+            }
+        }
+    }
+
+    private void itemBankSettings(int slot){
+    }
+
+    private void miscSettings(int slot){
+        switch (slot){
+            case 0:{
+                //プレイヤー表示タイトル設定
+                new TitleTextSelectorAPI(menu.p, "§b§lプレイヤー表示タイトル設定", gItemStack.playerTitleText,  (event, titleText) -> {
+                    gItemStack.playerTitleText = titleText;
+                    pushSettings();
+                    reopenMenu(6, 0);
+                    return null;
+                }, event -> {
+                    reopenMenu(6, 0);
+                    return null;
+                });
+                break;
+            }
+            case 1:{
+                //サーバー表示タイトル設定
+                new TitleTextSelectorAPI(menu.p, "§b§lサーバー表示タイトル設定", gItemStack.playerTitleText,  (event, titleText) -> {
+                    gItemStack.broadcastTitleText = titleText;
+                    pushSettings();
+                    reopenMenu(6, 0);
+                    return null;
+                }, event -> {
+                    reopenMenu(6, 0);
+                    return null;
+                });
+                break;
+            }
+            case 2:{
+                //テレポート設定
+                break;
+            }
+            case 3:{
+                //殺害設定
+                new BooleanSelectorAPI("§b§lプレイヤー殺害設定", menu.p, new ItemStack(Material.DIAMOND_SWORD), gItemStack.killPlayer, (event, aBoolean) -> {
+                    gItemStack.killPlayer = aBoolean;
+                    pushSettings();
+                    reopenMenu(6,0);
+                    return null;
+                }, event -> {
+                    reopenMenu(6,0);
+                    return null;
+                });
+                break;
             }
         }
     }

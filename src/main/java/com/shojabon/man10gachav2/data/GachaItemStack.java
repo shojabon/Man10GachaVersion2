@@ -32,8 +32,8 @@ public class GachaItemStack implements Serializable {
     public ArrayList<String> playerMessage = null;
 
     public boolean giveItem = true;
-    public GachaTitleText playerTitleText = null;
-    public GachaTitleText broadcastTitleText = null;
+    public GachaTitleText playerTitleText = new GachaTitleText();
+    public GachaTitleText broadcastTitleText = new GachaTitleText();
     public ArrayList<ItemStack> items = null;
     public ArrayList<String> pexGroup = null;
     public ArrayList<String> pexPermission = null;
@@ -274,7 +274,7 @@ public class GachaItemStack implements Serializable {
         if(teleport != null){
             objects.put("teleport", this.teleport);
         }
-        if(broadcastSound != null){
+        if(broadcastSound.usable()){
             objects.put("broadcastSound", this.broadcastSound);
         }
         if(playerSound != new GachaSound(Sound.ENTITY_PLAYER_LEVELUP, 1, 1)){

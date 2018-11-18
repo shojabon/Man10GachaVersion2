@@ -184,6 +184,7 @@ public class GachaItemStack implements Serializable {
 
     public String getComparisonString(){
         Map<String, Object> map = getStringData();
+        if(map.containsKey("teleport")) map.put("teleport", ((GachaTeleport)map.get("teleport")).getStringData());
         return getMD5(serialize(map));
     }
 

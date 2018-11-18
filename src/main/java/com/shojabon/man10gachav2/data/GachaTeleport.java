@@ -12,9 +12,13 @@ import java.util.Map;
  * Created by sho on 2018/07/09.
  */
 public class GachaTeleport {
-    Location location;
+    public Location location;
     public GachaTeleport(String world, double x, double y, double z, float pitch, float yaw){
         this.location = new Location(Bukkit.getWorld(world), x, y, z, pitch, yaw);
+    }
+
+    public GachaTeleport(Location location){
+        this.location = location;
     }
 
     public void teleportPlayerToLocation(Player player){

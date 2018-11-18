@@ -437,6 +437,15 @@ public class GachaItemStackSettingsMenu {
             }
             case 2:{
                 //テレポート設定
+                new LocationSelectorAPI("§b§lテレポート設定", gItemStack.teleport, menu.p, (event, location) -> {
+                    if(location != null) gItemStack.teleport = new GachaTeleport(location);
+                    pushSettings();
+                    reopenMenu(6,0);
+                    return null;
+                }, event -> {
+                    reopenMenu(6,0);
+                    return null;
+                });
                 break;
             }
             case 3:{

@@ -32,7 +32,7 @@ public class GachaContainerSettingsMenu {
     String gacha;
     Player p;
     String title;
-    Function<InventoryClickEvent, String> cancelFunction;
+    Function<GachaGame, String> cancelFunction;
     GachaBannerDictionary bannerDictionary = new GachaBannerDictionary();
     GachaGame game;
 
@@ -41,6 +41,8 @@ public class GachaContainerSettingsMenu {
 
     GachaStorageDrawtool tool;
     GachaContainerSettingsMenu menu;
+
+    Man10GachaAPI api;
 
     //page parameters
     int totalPages = 0;
@@ -51,7 +53,6 @@ public class GachaContainerSettingsMenu {
             items.put(i, game.getStorage().get(i));
         }
         totalPages = items.size()/54;
-        if(items.size()/54 - totalPages > 0) totalPages += 1;
         if(totalPages == 0) totalPages = 1;
     }
 
@@ -69,7 +70,7 @@ public class GachaContainerSettingsMenu {
         return string.replaceAll("§", "");
     }
 
-    public GachaContainerSettingsMenu(Player p, String title, String gacha, GachaStorageDrawtool currentTool, Function<InventoryClickEvent, String> cancelFunction){
+    public GachaContainerSettingsMenu(Player p, String title, String gacha, GachaStorageDrawtool currentTool, Function<GachaGame, String> cancelFunction){
         p.closeInventory();
         this.cancelFunction = cancelFunction;
         this.gacha = gacha;
@@ -80,6 +81,7 @@ public class GachaContainerSettingsMenu {
         this.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin("Man10GachaV2");
         Bukkit.getPluginManager().registerEvents(listener, plugin);
         SInventory i = new SInventory(9, title);
+        api = new Man10GachaAPI();
         i.setItem(new int[]{72,79, 54,55,56,57,58,59,60,61,62,70,71,73,63,64, 69}, new SItemStack(Material.STAINED_GLASS_PANE).setDamage(11).setDisplayname(" ").build());
         i.setItem(new int[]{54,55}, new SItemStack(Material.STAINED_GLASS_PANE).setDamage(14).setDisplayname("§c§l§n次へ").build());
         i.setItem(new int[]{62,61}, new SItemStack(Material.STAINED_GLASS_PANE).setDamage(14).setDisplayname("§c§l§n前へ").build());
@@ -117,8 +119,8 @@ public class GachaContainerSettingsMenu {
     }
 
     private void renderPageSelectionButton(){
-        SItemStack nextButton =  new SItemStack(Material.STAINED_GLASS_PANE).setDamage(14).setDisplayname("§c§l§n次へ").addLore("§c§l現在のページ:" + (currentPage + 1) + "/" + (totalPages + 1));
-        SItemStack previousButton =  new SItemStack(Material.STAINED_GLASS_PANE).setDamage(14).setDisplayname("§c§l§n前へ").addLore("§c§l現在のページ:" + (currentPage + 1) + "/" + (totalPages + 1));
+        SItemStack nextButton =  new SItemStack(Material.STAINED_GLASS_PANE).setDamage(14).setDisplayname("§c§l§n次へ").addLore("§c§l現在のページ:" + (currentPage + 1) + "/" + (totalPages));
+        SItemStack previousButton =  new SItemStack(Material.STAINED_GLASS_PANE).setDamage(14).setDisplayname("§c§l§n前へ").addLore("§c§l現在のページ:" + (currentPage + 1) + "/" + (totalPages));
         inv.setItem(61, nextButton.build());
         inv.setItem(62, nextButton.build());
 
@@ -202,7 +204,8 @@ public class GachaContainerSettingsMenu {
     private void pushPageToList(int page){
         for(int i = 0;i < 54;i++){
             if(inv.getItem(i) != null){
-                items.put(page * 54 + i, new GachaFinalItemStack(new GachaItemStack(items.get(page * 54 + i).getItemStack()), inv.getItem(i).getAmount()));
+                items.put(page * 54 + i, new GachaFinalItemStack(new GachaItemStack(inv.getItem(i)), inv.getItem(i).getAmount()));
+                //items.put(page * 54 + i, new GachaFinalItemStack(new GachaItemStack(items.get(page * 54 + i).getItemStack()), inv.getItem(i).getAmount()));
             }else{
                 items.put(page * 54 + i, new GachaFinalItemStack(null, 0));
             }
@@ -291,9 +294,7 @@ public class GachaContainerSettingsMenu {
             }
             if(r == 77){
                 e.setCancelled(true);
-                Bukkit.broadcastMessage(String.valueOf(currentPage));
                 for(int i = 0;i < 54;i++){
-                    Bukkit.broadcastMessage(String.valueOf(items.size()));
                     if(inv.getItem( i) != null){
                         items.put((totalPages + 1) * 54 + i, items.get(i));
                     }else{
@@ -305,7 +306,15 @@ public class GachaContainerSettingsMenu {
                 return;
             }
             if(r == 80) {
-                cancelFunction.apply(e);
+                pushPageToList(currentPage);
+                ArrayList<GachaFinalItemStack> itemStacks = new ArrayList<>();
+                for(int i = 0;i < items.size();i++){
+                    itemStacks.add(items.get(items.keySet().toArray()[i]));
+                }
+                game.setItemStacks(itemStacks);
+                api.updateGacha(game);
+                api.reloadGacha(gacha);
+                cancelFunction.apply(game);
                 return;
             }
             if(r == 78){
@@ -314,7 +323,7 @@ public class GachaContainerSettingsMenu {
                 return;
             }
             if(r == 61 || r == 62){
-                if(currentPage + 1 > totalPages){
+                if(currentPage + 1 >= totalPages){
                     return;
                 }
                 pushPageToList(currentPage);

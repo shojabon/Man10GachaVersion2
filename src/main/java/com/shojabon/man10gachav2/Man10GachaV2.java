@@ -3,7 +3,9 @@ package com.shojabon.man10gachav2;
 import com.google.gson.Gson;
 import com.shojabon.man10gachav2.apis.*;
 import com.shojabon.man10gachav2.data.*;
+import com.shojabon.man10gachav2.data.GachaPaymentData.GachaItemStackPayment;
 import com.shojabon.man10gachav2.data.GachaPaymentData.GachaVaultPayment;
+import com.shojabon.man10gachav2.enums.GachaSpinAlgorithm;
 import com.shojabon.man10gachav2.event.SignClickEvent;
 import com.shojabon.man10gachav2.event.SignDestroyEvent;
 import com.shojabon.man10gachav2.event.SignUpdateEvent;
@@ -11,6 +13,7 @@ import com.shojabon.man10gachav2.menu.GachaSettingsSelectionMenu;
 import org.apache.commons.codec.binary.Base64OutputStream;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.command.Command;
@@ -107,19 +110,14 @@ public final class Man10GachaV2 extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(command.getName().equalsIgnoreCase("gacha")){
             Player p = ((Player)sender);
-            //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.POTATO)), 10));
-            //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.DIAMOND)), 10));
-            //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.GOLD_INGOT)), 10));
-            //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.IRON_INGOT)), 10));
-            //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.EMERALD)), 10));
-            //items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.TNT)), 10));
-            //api.createNewGacha(new GachaSettings("test1"), payment, items);
-            //GachaGame game = new GachaGame("test1", this);
-            //game.play(((Player)sender));
-            //IChatBaseComponent component = IChatBaseComponent.ChatSerializer.a("[\"\",{\"text\":\"1. \",\"bold\":true,\"color\":\"yellow\"},{\"text\":\"[X]\",\"bold\":true,\"color\":\"red\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"gacha settings test1 broadcastMessage delete 0\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"メッセージを消去する\"}},{\"text\":\"[U]\",\"bold\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"mgacha up\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストをに上げる\"}},{\"text\":\"[D]\",\"bold\":true,\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/gacha down\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストを下げる\"}},{\"text\":\"[E]\",\"bold\":true,\"color\":\"green\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"テキストを編集する\"},\"insertion\":\"/mgacha edit\"},{\"text\":\"メッセージ\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"メッセージ全部\"}}]");
-            //PacketPlayOutChat packet = new PacketPlayOutChat(component, ChatMessageType.CHAT);
-            //((CraftPlayer)((Player)sender)).getHandle().playerConnection.sendPacket(packet);
-            //ArrayList<GachaPayment> payment = new ArrayList<>();
+            /*ArrayList<GachaPayment> payments = new ArrayList<>();
+            payments.add(new GachaPayment(new GachaVaultPayment(100)));
+
+            ArrayList<GachaFinalItemStack> items = new ArrayList<>();
+            items.add(new GachaFinalItemStack(new GachaItemStack(new ItemStack(Material.DIAMOND)),10));
+            GachaSettings settings = new GachaSettings("testteasdawdasd", "test", 0, new GachaSound(Sound.BLOCK_DISPENSER_DISPENSE, 1,0), 10, GachaSpinAlgorithm.RAMP, false, false, false, "",new ItemStack(Material.DIAMOND), 0, 0);
+            api.createNewGacha(settings, payments, items);
+            */
             new Thread(() -> new GachaSettingsSelectionMenu(p)).start();
 
         }

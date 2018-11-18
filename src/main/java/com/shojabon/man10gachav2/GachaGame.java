@@ -47,6 +47,10 @@ public class GachaGame {
     private GachaVault vault;
     private GachaItemBank itemBank;
 
+    public void setItemStacks(ArrayList<GachaFinalItemStack> items){
+        this.itemStacks = items;
+    }
+
     public ArrayList<GachaPayment> getGachaPayments(){
         return payments;
     }
@@ -92,11 +96,17 @@ public class GachaGame {
         for(String s : split){
             String[] split1 = s.split(",");
             if(Integer.valueOf(split1[0]) == -1){
+                itemStacks.add(new GachaFinalItemStack(null, 0));
                 storage.add(new GachaFinalItemStack(null, 0));
             }else{
-                GachaFinalItemStack item = new GachaFinalItemStack(itemIndex.get(Integer.valueOf(split1[0])), Integer.valueOf(split1[1]));
-                itemStacks.add(item);
-                storage.add(item);
+                if(itemIndex.get(Integer.valueOf(split1[0])) != null){
+                    GachaFinalItemStack item = new GachaFinalItemStack(itemIndex.get(Integer.valueOf(split1[0])), Integer.valueOf(split1[1]));
+                    itemStacks.add(item);
+                    storage.add(item);
+                }else{
+                    itemStacks.add(new GachaFinalItemStack(null, 0));
+                    storage.add(new GachaFinalItemStack(null, 0));
+                }
             }
         }
         return itemStacks;

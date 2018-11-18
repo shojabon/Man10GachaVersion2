@@ -28,14 +28,14 @@ public class SoundSelectorAPI {
     Listener listener = new Listener();
     JavaPlugin plugin;
     Player p;
-    GachaBannerDictionary dictionary;
-    String prefix = "§6[§aMg§fac§dha§5V2§6]§f";
-    Sound sound;
-    float volume;
-    float pitch;
-    String title;
-    BiFunction<InventoryClickEvent, GachaSound, String> okFunction;
-    Function<InventoryClickEvent, String> cancelFunction;
+    private GachaBannerDictionary dictionary;
+    private String prefix = "§6[§aMg§fac§dha§5V2§6]§f";
+    private Sound sound;
+    private float volume;
+    private float pitch;
+    private String title;
+    private BiFunction<InventoryClickEvent, GachaSound, String> okFunction;
+    private Function<InventoryClickEvent, String> cancelFunction;
     boolean trans = false;
 
     public SoundSelectorAPI(String title, Player p, float volume, float pitch, Sound sound, BiFunction<InventoryClickEvent, GachaSound, String> okFunction, Function<InventoryClickEvent, String> cancelFunction){
@@ -187,8 +187,7 @@ public class SoundSelectorAPI {
                         return null;
                     }
                     try{
-                        Sound preSound = Sound.valueOf(s);
-                        sound = preSound;
+                        sound = Sound.valueOf(s);
                     }catch (IllegalArgumentException ee){
                         p.sendMessage(prefix + "音名が存在しません");
                         return "restart";

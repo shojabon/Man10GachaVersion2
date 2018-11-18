@@ -307,16 +307,34 @@ public class Man10GachaAPI {
 
         printPayment(payments, config);
 
-
         ArrayList<GachaItemStack> index = compressItemStack(itemStacks);
+
+        Map<String, Integer> indexHashes = new HashMap<>();
+        for(int i = 0;i < index.size();i++){
+            indexHashes.put(index.get(i).getComparisonString(), i);
+        }
+
+
         StringBuilder out = new StringBuilder();
         for (GachaFinalItemStack itemStack : itemStacks) {
-            out.append(index.indexOf(itemStack.getItemStack())).append(",").append(itemStack.getAmount()).append("|");
+            if(itemStack.doesExist()){
+                out.append(indexHashes.get(itemStack.getItemStack().getComparisonString())).append(",").append(itemStack.getAmount()).append("|");
+            }else{
+                out.append("-1,0|");
+            }
         }
-        config.set("storage", out.toString().substring(0, toString().length() -1));
+
+
+        if(out.length() != 0){
+            config.set("storage", out.toString().substring(0, out.toString().length() -1));
+        }else{
+            config.set("storage", null);
+        }
         for(int i = 0;i < index.size();i++){
-            Map<String, Object> item = index.get(i).getStringData();
-            printItemIndex(item, config, i);
+            if(index.get(i) != null){
+                Map<String, Object> item = index.get(i).getStringData();
+                printItemIndex(item, config, i);
+            }
         }
 
         try {
@@ -324,6 +342,22 @@ public class Man10GachaAPI {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void deleteGacha(GachaGame game){
+        if(ifGachaExists(game.getSettings().name)){
+            File file = new File(plugin.getDataFolder(), "gacha" + File.separator + game.getSettings().name + ".yml");
+            file.delete();
+        }
+    }
+
+    public void updateGacha(GachaGame game){
+        if(!ifGachaExists(game.getSettings().name)){
+            createNewGacha(game);
+            return;
+        }
+        deleteGacha(game);
+        createNewGacha(game);
     }
 
     public void createNewGacha(GachaGame game){
@@ -345,6 +379,8 @@ public class Man10GachaAPI {
     public boolean ifSignsFileExists(){
         return new File(plugin.getDataFolder(), "signs.yml").exists();
     }
+
+
 
     private HashMap<ItemStack, Integer> createInventoryItemMap(Player p){
         HashMap<ItemStack, Integer> map = new HashMap<>();
@@ -501,9 +537,15 @@ public class Man10GachaAPI {
 
     private ArrayList<GachaItemStack> compressItemStack(ArrayList<GachaFinalItemStack> items){
         ArrayList<GachaItemStack> out = new ArrayList<>();
+        ArrayList<String> hash = new ArrayList<>();
         for (GachaFinalItemStack item : items) {
-            if (!out.contains(item.getItemStack())) {
-                out.add(item.getItemStack());
+            if(item != null){
+                if(item.doesExist()) {
+                    if (!hash.contains(item.getItemStack().getComparisonString())) {
+                        out.add(item.getItemStack());
+                        hash.add(item.getItemStack().getComparisonString());
+                    }
+                }
             }
         }
         return out;

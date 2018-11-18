@@ -33,10 +33,12 @@ public class GachaSettingsMenu {
     JavaPlugin plugin;
     String gacha;
     Player p;
+    Man10GachaAPI api;
     public GachaSettingsMenu(String gacha, Player p){
         p.closeInventory();
         this.gacha = gacha;
         this.p = p;
+        this.api = new Man10GachaAPI();
         this.plugin = (JavaPlugin) Bukkit.getPluginManager().getPlugin("Man10GachaV2");
         this.generalSettingsMenu = new GachaGeneralSettingsMenu(gacha, p);
         inv = new SInventory(5, "§b§l" + gacha + "：設定メニュー").fillInventory(new SItemStack(Material.STAINED_GLASS_PANE).setDamage(11).setDisplayname(" ").build()).
